@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:38:40 by espadara                              */
-/*      Updated: 2025/08/26 12:26:35 by amoraru                               */
+/*      Updated: 2025/08/26 13:45:10 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,10 +100,15 @@ SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isprint(250), isprint('0'), \
          sea_strlen(strlen_test_four), sea_strlen(strlen_test_five));
 
   puts("\n---MEMSET---");
-  char memset_test_one[] = "hey boy";
-  printf("STR BEFORE: |%s|\n", memset_test_one);
-  sea_memset(& memset_test_one, '0', 3);
-  printf("STR AFTER : |%s|\n", memset_test_one);
+  char memset_test_real_one[] = "hey boy";
+  char memset_test_seal_one[] = "hey boy";
+  printf("REAL STR BEFORE: |%s|\n", memset_test_real_one);
+  memset(&memset_test_real_one, '0', 2);
+  printf("REAL STR AFTER : |%s|\n", memset_test_real_one);
+  printf("SEAL STR BEFORE: |%s|\n", memset_test_seal_one);
+  memset(&memset_test_seal_one, '0', 2);
+  printf("SEAL STR AFTER : |%s|\n", memset_test_seal_one);
+
   puts("Done!");
   return (0);
 }
