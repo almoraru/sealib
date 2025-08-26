@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:38:40 by espadara                              */
-/*      Updated: 2025/08/26 13:45:10 by espadara                              */
+/*      Updated: 2025/08/26 16:43:52 by amoraru                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,16 @@ SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isprint(250), isprint('0'), \
   printf("SEAL STR BEFORE: |%s|\n", memset_test_seal_one);
   memset(&memset_test_seal_one, '0', 2);
   printf("SEAL STR AFTER : |%s|\n", memset_test_seal_one);
+
+  char bzero_real_one[]= "YO I AM STRING";
+  char bzero_seal_one[]= "YO I AM STRING";
+  printf("REAL STR BEFORE: |%s|\n", bzero_real_one);
+  bzero(&bzero_real_one, sizeof(bzero_real_one));
+  printf("REAL STR AFTER : |%s|\n", bzero_real_one);
+  printf("SEAL STR BEFORE: |%s|\n", bzero_seal_one);
+  bzero(&bzero_seal_one, sizeof(bzero_seal_one));
+  printf("SEAL STR AFTER : |%s|\n", bzero_seal_one);
+
 
   puts("Done!");
   return (0);

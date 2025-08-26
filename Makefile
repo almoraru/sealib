@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/08/23 15:29:20 by espadara                                #
-#      Updated: 2025/08/26 13:41:09 by espadara                                #
+#      Updated: 2025/08/26 15:51:26 by amoraru                                 #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -33,7 +33,7 @@ INC = -I ./includes/
 FLAGS = -Wall -Wextra -Werror
 
 SOURCES = sea_isalpha.c sea_isdigit.c sea_isalnum.c sea_isascii.c sea_isprint.c \
-	sea_strlen.c sea_memset.c
+	sea_strlen.c sea_memset.c sea_bzero.c
 
 
 SRCS =  $(addprefix $(SRCS_PATH), $(SOURCES))

@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/08/26 12:25:56 by amoraru                               */
+/*      Updated: 2025/08/26 15:46:56 by amoraru                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,10 @@ int	sea_isprint(int c);
 
 /* STRINGS */
 size_t	sea_strlen(const char *s);
+void	*sea_bzero(void *s, size_t n);
 
 /* MEMORY */
 void	*sea_memset(void *s, int c, size_t n);
+
+
 #endif
