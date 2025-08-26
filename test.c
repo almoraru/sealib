@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:38:40 by espadara                              */
-/*      Updated: 2025/08/23 18:46:21 by espadara                              */
+/*      Updated: 2025/08/26 11:23:44 by amoraru                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,5 +83,6 @@ SEAL: |%d| |%d| |%d|\n", 'A', '@', 'v', isprint('A'), isprint('@'), \
 SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isprint(250), isprint('0'), \
          isprint(')'), sea_isprint(250), sea_isprint('0'),sea_isprint(')'));
 
+  puts("Done!");
   return (0);
 }

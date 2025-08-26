@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/08/23 15:29:20 by espadara                                #
-#      Updated: 2025/08/23 18:45:42 by espadara                                #
+#      Updated: 2025/08/26 11:24:51 by amoraru                                 #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -64,6 +64,9 @@ clean:
 fclean: clean
 	/bin/rm -rf $(NAME)
 	echo "Bin $(NAME) removed."
+	/bin/rm -rf a.out
+	echo "Test for $(NAME) removed."
+
 
 re:             fclean all
 
