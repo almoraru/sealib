@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:38:40 by espadara                              */
-/*      Updated: 2025/08/26 11:23:44 by amoraru                               */
+/*      Updated: 2025/08/26 12:26:35 by amoraru                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,27 @@ SEAL: |%d| |%d| |%d|\n", 'A', '@', 'v', isprint('A'), isprint('@'), \
 SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isprint(250), isprint('0'), \
          isprint(')'), sea_isprint(250), sea_isprint('0'),sea_isprint(')'));
 
+
+  char *strlen_test_one = "hey I AM A REAL STRING";
+  char *strlen_test_two = "";
+  char *strlen_test_three = "a";
+  char *strlen_test_four = "1234\01234";
+  char *strlen_test_five = "xyz";
+
+  puts("\n---STRLEN---");
+  printf("1 - strlen ! STRS:\n|%s|\n|%s|\n|%s|\n|%s|\n|%s|\nREAL: |%ld| \
+|%ld| |%ld| |%ld| |%ld|\nSEAL: |%ld| |%ld| |%ld| |%ld| |%ld|\n", \
+         strlen_test_one, strlen_test_two, strlen_test_three, strlen_test_four, \
+         strlen_test_five, strlen(strlen_test_one), strlen(strlen_test_two),\
+         strlen(strlen_test_three),strlen(strlen_test_four),strlen(strlen_test_five),\
+         sea_strlen(strlen_test_one),sea_strlen(strlen_test_two),sea_strlen(strlen_test_three), \
+         sea_strlen(strlen_test_four), sea_strlen(strlen_test_five));
+
+  puts("\n---MEMSET---");
+  char memset_test_one[] = "hey boy";
+  printf("STR BEFORE: |%s|\n", memset_test_one);
+  sea_memset(& memset_test_one, '0', 3);
+  printf("STR AFTER : |%s|\n", memset_test_one);
   puts("Done!");
   return (0);
 }

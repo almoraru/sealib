@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/08/23 18:45:33 by espadara                              */
+/*      Updated: 2025/08/26 12:25:56 by amoraru                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <ctype.h>
+# include <string.h>
 /* DEFINES  */
 
 
@@ -44,4 +45,9 @@ int	sea_isalnum(int c);
 int	sea_isascii(int c);
 int	sea_isprint(int c);
 
+/* STRINGS */
+size_t	sea_strlen(const char *s);
+
+/* MEMORY */
+void	*sea_memset(void *s, int c, size_t n);
 #endif
