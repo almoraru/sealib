@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:38:40 by espadara                              */
-/*      Updated: 2025/08/26 16:43:52 by amoraru                               */
+/*      Updated: 2025/08/26 23:14:47 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isprint(250), isprint('0'), \
   memset(&memset_test_seal_one, '0', 2);
   printf("SEAL STR AFTER : |%s|\n", memset_test_seal_one);
 
+  puts("\n---BZERO---");
   char bzero_real_one[]= "YO I AM STRING";
   char bzero_seal_one[]= "YO I AM STRING";
   printf("REAL STR BEFORE: |%s|\n", bzero_real_one);
@@ -118,6 +119,24 @@ SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isprint(250), isprint('0'), \
   bzero(&bzero_seal_one, sizeof(bzero_seal_one));
   printf("SEAL STR AFTER : |%s|\n", bzero_seal_one);
 
+  puts("\n---MEMCPY---");
+  char memcpy_real_dest[] = "00000000";
+  char memcpy_real_src[] = "Ayo wtf dawg";
+  char memcpy_seal_dest[] = "00000000";
+  char memcpy_seal_src[] = "Ayo wtf dawg";
+  printf("REAL MEMCPY RESULT: |%s| \n", memcpy(memcpy_real_dest, memcpy_real_src, 7));
+  printf("SEAL MEMCPY RESULT: |%s| \n", sea_memcpy(memcpy_seal_dest, memcpy_seal_src, 7));
+
+  puts("\n---MEMMOVE---");
+   char memmove_real_buffer[] = "abcdefghij";
+   char memmove_seal_buffer[] = "abcdefghij";
+    printf("--- Overlap Test ---\n");
+    printf("Original REAL buffer: |%s|\n", memmove_real_buffer);
+    printf("Original SEAL buffer: |%s|\n\n", memmove_seal_buffer);
+    memmove(memmove_real_buffer + 2, memmove_real_buffer, 5);
+    printf("REAL MEMMOVE RESULT:  |%s|\n", memmove_real_buffer);
+    sea_memmove(memmove_seal_buffer + 2, memmove_seal_buffer, 5);
+    printf("SEAL MEMMOVE RESULT:  |%s|\n", memmove_seal_buffer);
 
   puts("Done!");
   return (0);
