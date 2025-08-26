@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:38:40 by espadara                              */
-/*      Updated: 2025/08/26 23:14:47 by espadara                              */
+/*      Updated: 2025/08/26 23:25:18 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,13 +130,25 @@ SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isprint(250), isprint('0'), \
   puts("\n---MEMMOVE---");
    char memmove_real_buffer[] = "abcdefghij";
    char memmove_seal_buffer[] = "abcdefghij";
-    printf("--- Overlap Test ---\n");
-    printf("Original REAL buffer: |%s|\n", memmove_real_buffer);
-    printf("Original SEAL buffer: |%s|\n\n", memmove_seal_buffer);
-    memmove(memmove_real_buffer + 2, memmove_real_buffer, 5);
-    printf("REAL MEMMOVE RESULT:  |%s|\n", memmove_real_buffer);
-    sea_memmove(memmove_seal_buffer + 2, memmove_seal_buffer, 5);
-    printf("SEAL MEMMOVE RESULT:  |%s|\n", memmove_seal_buffer);
+   printf("--- Overlap Test ---\n");
+   printf("Original REAL buffer: |%s|\n", memmove_real_buffer);
+   printf("Original SEAL buffer: |%s|\n\n", memmove_seal_buffer);
+   memmove(memmove_real_buffer + 2, memmove_real_buffer, 5);
+   printf("REAL MEMMOVE RESULT:  |%s|\n", memmove_real_buffer);
+   sea_memmove(memmove_seal_buffer + 2, memmove_seal_buffer, 5);
+   printf("SEAL MEMMOVE RESULT:  |%s|\n", memmove_seal_buffer);
+
+   puts("\n---STRCPY---");
+   const char *strcpy_src = "Hello, world!";
+   char strcpy_real_dest[] = "XXXXXXXXXXXXXXXXXXX";
+   char strcpy_seal_dest[] = "XXXXXXXXXXXXXXXXXXX";
+   printf("Original REAL dest: |%s|\n", strcpy_real_dest);
+   printf("Original SEAL dest: |%s|\n\n", strcpy_seal_dest);
+   printf("Source string:      |%s|\n\n", strcpy_src);
+   strcpy(strcpy_real_dest, strcpy_src);
+   printf("REAL STRCPY RESULT: |%s|\n", strcpy_real_dest);
+   sea_strcpy(strcpy_seal_dest, strcpy_src);
+   printf("SEAL STRCPY RESULT: |%s|\n", strcpy_seal_dest);
 
   puts("Done!");
   return (0);
