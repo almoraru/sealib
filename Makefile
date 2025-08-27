@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/08/23 15:29:20 by espadara                                #
-#      Updated: 2025/08/27 20:00:57 by espadara                                #
+#      Updated: 2025/08/27 23:19:19 by espadara                                #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -34,7 +34,9 @@ FLAGS = -Wall -Wextra -Werror
 
 SOURCES = sea_isalpha.c sea_isdigit.c sea_isalnum.c sea_isascii.c sea_isprint.c \
 	sea_strlen.c sea_memset.c sea_bzero.c sea_memcpy.c sea_memmove.c			\
-	sea_strcpy.c sea_strncpy.c sea_strlcpy.c sea_strlcat.c \
+	sea_strcpy.c sea_strncpy.c sea_strlcpy.c sea_strlcat.c sea_toupper.c 		\
+	sea_tolower.c sea_strchr.c sea_strrchr.c sea_strstr.c sea_strncmp.c			\
+	sea_strcmp.c sea_strnstr.c
 
 
 SRCS =  $(addprefix $(SRCS_PATH), $(SOURCES))
@@ -51,7 +53,7 @@ $(NAME):$(OBJ)
 	ranlib $(NAME)
 	@echo "Binary $(NAME) created."
 	@echo "Making test"
-	gcc test.c sealib.a -I includes
+	gcc test.c sealib.a -I includes -lbsd
 
 $(OBJ_PATH)%.o: $(SRCS_PATH)%.c
 	@echo "Compilation of $(notdir $<)"

@@ -17,343 +17,348 @@
 /*                                                                            */
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
-/*      Created: 2025/08/23 15:38:40 by espadara                              */
-/*      Updated: 2025/08/27 21:36:57 by espadara                              */
+/*      Created: 2025/08/27 22:40:24 by espadara                              */
+/*      Updated: 2025/08/27 23:18:01 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "sealib.h"
+
+/* TEST STRUCTS */
+struct TestCase {
+    const char *string;
+    int character;
+};
 
 int main(void)
 {
   printf("CONDUCTING TESTS!!!\n");
 
-
-
   puts("\n---ISALPHA---");
-  printf("1 - isalpha!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'a', '4', 'Z', isalpha('a'), isalpha('4'), \
-         isalpha('Z'), sea_isalpha('a'), sea_isalpha('4'),sea_isalpha('Z'));
-  printf("2 - isalpha!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'A', '@', 'v', isalpha('A'), isalpha('@'), \
-         isalpha('v'), sea_isalpha('A'), sea_isalpha('@'),sea_isalpha('v'));
-  printf("3 - isalpha!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'x', '0', ')', isalpha('x'), isalpha('0'), \
-         isalpha(')'), sea_isalpha('x'), sea_isalpha('0'),sea_isalpha(')'));
-
-
+  {
+    char tests[] = {'a', 'G', 'z', 'Z', '5', '@', 0};
+    for (int i = 0; tests[i]; i++) {
+        int real = isalpha(tests[i]);
+        int seal = sea_isalpha(tests[i]);
+        printf("Test '%c': REAL=%d, SEAL=%d -> %s\n", tests[i], real, seal,
+               (!!real == !!seal) ? "OK" : "FAIL");
+    }
+  }
 
   puts("\n---ISDIGIT---");
-  printf("1 - isdigit!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'a', '4', 'Z', isdigit('a'), isdigit('4'), \
-         isdigit('Z'), sea_isdigit('a'), sea_isdigit('4'),sea_isdigit('Z'));
-  printf("2 - isdigit!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'A', '@', 'v', isdigit('A'), isdigit('@'), \
-         isdigit('v'), sea_isdigit('A'), sea_isdigit('@'),sea_isdigit('v'));
-  printf("3 - isdigit!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'x', '0', ')', isdigit('x'), isdigit('0'), \
-         isdigit(')'), sea_isdigit('x'), sea_isdigit('0'),sea_isdigit(')'));
-
-
+  {
+    char tests[] = {'5', '0', '9', 'a', 'Z', '#', 0};
+    for (int i = 0; tests[i]; i++) {
+        int real = isdigit(tests[i]);
+        int seal = sea_isdigit(tests[i]);
+        printf("Test '%c': REAL=%d, SEAL=%d -> %s\n", tests[i], real, seal,
+               (!!real == !!seal) ? "OK" : "FAIL");
+    }
+  }
 
   puts("\n---ISALNUM---");
-  printf("1 - isalnum!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'a', '4', 'Z', isalnum('a'), isalnum('4'), \
-         isalnum('Z'), sea_isalnum('a'), sea_isalnum('4'),sea_isalnum('Z'));
-  printf("2 - isalnum!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'A', '@', 'v', isalnum('A'), isalnum('@'), \
-         isalnum('v'), sea_isalnum('A'), sea_isalnum('@'),sea_isalnum('v'));
-  printf("3 - isalnum!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'x', '0', ')', isalnum('x'), isalnum('0'), \
-         isalnum(')'), sea_isalnum('x'), sea_isalnum('0'),sea_isalnum(')'));
+  {
+    char tests[] = {'a', 'Z', '5', '0', 'g', '9', '@', 0};
+    for (int i = 0; tests[i]; i++) {
+        int real = isalnum(tests[i]);
+        int seal = sea_isalnum(tests[i]);
+        printf("Test '%c': REAL=%d, SEAL=%d -> %s\n", tests[i], real, seal,
+               (!!real == !!seal) ? "OK" : "FAIL");
+    }
+  }
 
+  puts("\n---ISASCII---");
+  {
+    int tests[] = {'a', 127, 0, 128, -1, 255, 0};
+    for (int i = 0; tests[i]; i++) {
+        int real = isascii(tests[i]);
+        int seal = sea_isascii(tests[i]);
+        printf("Test %d: REAL=%d, SEAL=%d -> %s\n", tests[i], real, seal,
+               (!!real == !!seal) ? "OK" : "FAIL");
+    }
+  }
 
-
-    puts("\n---ISASCII---");
-  printf("1 - isascii!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'a', '4', 'Z', isascii('a'), isascii('4'), \
-         isascii('Z'), sea_isascii('a'), sea_isascii('4'),sea_isascii('Z'));
-  printf("2 - isascii!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'A', '@', 'v', isascii('A'), isascii('@'), \
-         isascii('v'), sea_isascii('A'), sea_isascii('@'),sea_isascii('v'));
-  printf("3 - isascii!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isascii(250), isascii('0'), \
-         isascii(')'), sea_isascii(250), sea_isascii('0'),sea_isascii(')'));
-
-
-
-      puts("\n---ISPRINT---");
-  printf("1 - isprint!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'a', '4', 'Z', isprint('a'), isprint('4'), \
-         isprint('Z'), sea_isprint('a'), sea_isprint('4'),sea_isprint('Z'));
-  printf("2 - isprint!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 'A', '@', 'v', isprint('A'), isprint('@'), \
-         isprint('v'), sea_isprint('A'), sea_isprint('@'),sea_isprint('v'));
-  printf("3 - isprint!!!\nCHARS |%c| |%c| |%c|\nREAL: |%d| |%d| |%d|\n\
-SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isprint(250), isprint('0'), \
-         isprint(')'), sea_isprint(250), sea_isprint('0'),sea_isprint(')'));
-
-
-  char *strlen_test_one = "hey I AM A REAL STRING";
-  char *strlen_test_two = "";
-  char *strlen_test_three = "a";
-  char *strlen_test_four = "1234\01234";
-  char *strlen_test_five = "xyz";
-
-
+  puts("\n---ISPRINT---");
+  {
+    int tests[] = {'a', '~', ' ', 31, 127, 200, 0};
+    for (int i = 0; tests[i]; i++) {
+        int real = isprint(tests[i]);
+        int seal = sea_isprint(tests[i]);
+        printf("Test %d ('%c'): REAL=%d, SEAL=%d -> %s\n", tests[i], tests[i], real, seal,
+               (!!real == !!seal) ? "OK" : "FAIL");
+    }
+  }
 
   puts("\n---STRLEN---");
-  printf("1 - strlen ! STRS:\n|%s|\n|%s|\n|%s|\n|%s|\n|%s|\nREAL: |%ld| \
-|%ld| |%ld| |%ld| |%ld|\nSEAL: |%ld| |%ld| |%ld| |%ld| |%ld|\n", \
-         strlen_test_one, strlen_test_two, strlen_test_three, strlen_test_four, \
-         strlen_test_five, strlen(strlen_test_one), strlen(strlen_test_two),\
-         strlen(strlen_test_three),strlen(strlen_test_four),strlen(strlen_test_five),\
-         sea_strlen(strlen_test_one),sea_strlen(strlen_test_two),sea_strlen(strlen_test_three), \
-         sea_strlen(strlen_test_four), sea_strlen(strlen_test_five));
-
-
+  {
+    const char *tests[] = {"hello", "", "a", "1234567890", NULL};
+    for (int i = 0; tests[i]; i++) {
+        size_t real = strlen(tests[i]);
+        size_t seal = sea_strlen(tests[i]);
+        printf("Test \"%s\": REAL=%zu, SEAL=%zu -> %s\n", tests[i], real, seal,
+               (real == seal) ? "OK" : "FAIL");
+    }
+  }
 
   puts("\n---MEMSET---");
-  char memset_test_real_one[] = "hey boy";
-  char memset_test_seal_one[] = "hey boy";
-  printf("REAL STR BEFORE: |%s|\n", memset_test_real_one);
-  memset(&memset_test_real_one, '0', 2);
-  printf("REAL STR AFTER : |%s|\n", memset_test_real_one);
-  printf("SEAL STR BEFORE: |%s|\n", memset_test_seal_one);
-  memset(&memset_test_seal_one, '0', 2);
-  printf("SEAL STR AFTER : |%s|\n", memset_test_seal_one);
-
-
+  {
+    struct { int c; size_t len; } tests[] = {
+        {'A', 5}, {'B', 10}, {'\0', 3}, {'$', 0}, {'Z', 1}
+    };
+    for (int i = 0; i < 5; ++i) {
+        char real_buf[11] = "xxxxxxxxxx";
+        char seal_buf[11] = "xxxxxxxxxx";
+        memset(real_buf, tests[i].c, tests[i].len);
+        sea_memset(seal_buf, tests[i].c, tests[i].len);
+        printf("Test: memset(buf, '%c', %zu) | Result: \"%s\" -> %s\n",
+               (char)tests[i].c, tests[i].len, seal_buf,
+               (memcmp(real_buf, seal_buf, 11) == 0) ? "OK" : "FAIL");
+    }
+  }
 
   puts("\n---BZERO---");
-  char bzero_real_one[]= "YO I AM STRING";
-  char bzero_seal_one[]= "YO I AM STRING";
-  printf("REAL STR BEFORE: |%s|\n", bzero_real_one);
-  bzero(&bzero_real_one, sizeof(bzero_real_one));
-  printf("REAL STR AFTER : |%s|\n", bzero_real_one);
-  printf("SEAL STR BEFORE: |%s|\n", bzero_seal_one);
-  bzero(&bzero_seal_one, sizeof(bzero_seal_one));
-  printf("SEAL STR AFTER : |%s|\n", bzero_seal_one);
-
-
+  {
+    size_t tests[] = {5, 10, 0, 1, 8};
+    for (int i = 0; i < 5; ++i) {
+        char real_buf[11] = "xxxxxxxxxx";
+        char seal_buf[11] = "xxxxxxxxxx";
+        bzero(real_buf, tests[i]);
+        sea_bzero(seal_buf, tests[i]);
+        printf("Test: bzero(buf, %zu) -> %s\n", tests[i],
+               (memcmp(real_buf, seal_buf, 11) == 0) ? "OK" : "FAIL");
+    }
+  }
 
   puts("\n---MEMCPY---");
-  char memcpy_real_dest[] = "00000000";
-  char memcpy_real_src[] = "Ayo wtf dawg";
-  char memcpy_seal_dest[] = "00000000";
-  char memcpy_seal_src[] = "Ayo wtf dawg";
-  printf("REAL MEMCPY RESULT: |%s| \n", memcpy(memcpy_real_dest, memcpy_real_src, 7));
-  printf("SEAL MEMCPY RESULT: |%s| \n", sea_memcpy(memcpy_seal_dest, memcpy_seal_src, 7));
-
-
+  {
+    struct { const char *src; size_t len; } tests[] = {
+        {"copy this", 5}, {"abc", 4}, {"", 1}, {"test", 0}, {"single", 1}
+    };
+    for (int i = 0; i < 5; ++i) {
+        char real_dest[20] = {0};
+        char seal_dest[20] = {0};
+        memcpy(real_dest, tests[i].src, tests[i].len);
+        sea_memcpy(seal_dest, tests[i].src, tests[i].len);
+        printf("Test: memcpy(dest, \"%s\", %zu) | Result: \"%s\" -> %s\n",
+               tests[i].src, tests[i].len, seal_dest,
+               (memcmp(real_dest, seal_dest, 20) == 0) ? "OK" : "FAIL");
+    }
+  }
 
   puts("\n---MEMMOVE---");
-   char memmove_real_buffer[] = "abcdefghij";
-   char memmove_seal_buffer[] = "abcdefghij";
-   printf("--- Overlap Test ---\n");
-   printf("Original REAL buffer: |%s|\n", memmove_real_buffer);
-   printf("Original SEAL buffer: |%s|\n\n", memmove_seal_buffer);
-   memmove(memmove_real_buffer + 2, memmove_real_buffer, 5);
-   printf("REAL MEMMOVE RESULT:  |%s|\n", memmove_real_buffer);
-   sea_memmove(memmove_seal_buffer + 2, memmove_seal_buffer, 5);
-   printf("SEAL MEMMOVE RESULT:  |%s|\n", memmove_seal_buffer);
+  {
+    char r1[] = "abcdefghij", s1[] = "abcdefghij";
+    memmove(r1 + 2, r1, 5); sea_memmove(s1 + 2, s1, 5);
+    printf("Test: memmove(\"abcdefghij\"+2, src, 5) | Result: \"%s\" -> %s\n", s1, (strcmp(r1, s1) == 0) ? "OK" : "FAIL");
 
+    char r2[] = "abcdefghij", s2[] = "abcdefghij";
+    memmove(r2, r2 + 2, 5); sea_memmove(s2, s2 + 2, 5);
+    printf("Test: memmove(dst, \"abcdefghij\"+2, 5) | Result: \"%s\" -> %s\n", s2, (strcmp(r2, s2) == 0) ? "OK" : "FAIL");
 
+    char r3[] = "abcdefghij", s3[] = "abcdefghij";
+    memmove(r3 + 5, r3, 5); sea_memmove(s3 + 5, s3, 5);
+    printf("Test: No Overlap | Result: \"%s\" -> %s\n", s3, (strcmp(r3, s3) == 0) ? "OK" : "FAIL");
 
-   puts("\n---STRCPY---");
-   const char *strcpy_src = "Hello, world!";
-   char strcpy_real_dest[] = "XXXXXXXXXXXXXXXXXXX";
-   char strcpy_seal_dest[] = "XXXXXXXXXXXXXXXXXXX";
-   printf("Original REAL dest: |%s|\n", strcpy_real_dest);
-   printf("Original SEAL dest: |%s|\n\n", strcpy_seal_dest);
-   printf("Source string:      |%s|\n\n", strcpy_src);
-   strcpy(strcpy_real_dest, strcpy_src);
-   printf("REAL STRCPY RESULT: |%s|\n", strcpy_real_dest);
-   sea_strcpy(strcpy_seal_dest, strcpy_src);
-   printf("SEAL STRCPY RESULT: |%s|\n", strcpy_seal_dest);
+    char r4[] = "abcdefghij", s4[] = "abcdefghij";
+    memmove(r4, r4, 0); sea_memmove(s4, s4, 0);
+    printf("Test: Zero Length | Result: \"%s\" -> %s\n", s4, (strcmp(r4, s4) == 0) ? "OK" : "FAIL");
 
+    char r5[] = "abcdefghij", s5[] = "abcdefghij";
+    memmove(r5, r5, 10); sea_memmove(s5, s5, 10);
+    printf("Test: Full Move | Result: \"%s\" -> %s\n", s5, (strcmp(r5, s5) == 0) ? "OK" : "FAIL");
+  }
 
+  puts("\n---STRLCPY---");
+  {
+    const char *src = "a long string to copy";
+    struct { size_t size; } tests[] = { {10}, {30}, {1}, {0}, {22} };
+    for (int i = 0; i < 5; ++i) {
+        char real_dest[30] = {0};
+        char seal_dest[30] = {0};
+        size_t real_ret = strlcpy(real_dest, src, tests[i].size);
+        size_t seal_ret = sea_strlcpy(seal_dest, src, tests[i].size);
+        printf("Test: strlcpy(dest, \"%s\", %zu) | Result: \"%s\", ret: %zu -> %s\n",
+               src, tests[i].size, seal_dest, seal_ret,
+               (strcmp(real_dest, seal_dest) == 0 && real_ret == seal_ret) ? "OK" : "FAIL");
+    }
+  }
 
-   puts("\n---STRNCPY---");
-   printf("--- STRNCPY Test 1: n < src length ---\n");
-    const char *strncpy_src1 = "Hello World"; // Length is 11
-    char strncpy_real_dest1[20] = "XXXXXXXXXXXXXXXXXXX";
-    char strncpy_seal_dest1[20] = "XXXXXXXXXXXXXXXXXXX";
-    printf("Original REAL dest: |%s|\n", strncpy_real_dest1);
-    printf("Original SEAL dest: |%s|\n\n", strncpy_seal_dest1);
-    strncpy(strncpy_real_dest1, strncpy_src1, 5);
-    sea_strncpy(strncpy_seal_dest1, strncpy_src1, 5);
-    printf("REAL STRNCPY RESULT:  |%s|\n", strncpy_real_dest1);
-    printf("SEAL STRNCPY RESULT:  |%s|\n", strncpy_seal_dest1);
-    printf("(Note: The result is not null-terminated)\n");
-    printf("\n--- STRNCPY Test 2: n > src length ---\n");
-    const char *strncpy_src2 = "test"; // Length is 4
-    char strncpy_real_dest2[20] = "XXXXXXXXXXXXXXXXXXX";
-    char strncpy_seal_dest2[20] = "XXXXXXXXXXXXXXXXXXX";
-    printf("Original REAL dest: |%s|\n", strncpy_real_dest2);
-    printf("Original SEAL dest: |%s|\n\n", strncpy_seal_dest2);
-    strncpy(strncpy_real_dest2, strncpy_src2, 10);
-    sea_strncpy(strncpy_seal_dest2, strncpy_src2, 10);
-    printf("REAL STRNCPY RESULT:  |%s|\n", strncpy_real_dest2);
-    printf("SEAL STRNCPY RESULT:  |%s|\n", strncpy_seal_dest2);
-    printf("(Note: The result is correctly null-terminated by padding)\n");
-    printf("\n--- STRNCPY Test 3: n == src length ---\n");
-    const char *strncpy_src3 = "Exact Fit"; // Length is 9
-    char strncpy_real_dest3[20] = "XXXXXXXXXXXXXXXXXXX";
-    char strncpy_seal_dest3[20] = "XXXXXXXXXXXXXXXXXXX";
-    printf("Original REAL dest: |%s|\n", strncpy_real_dest3);
-    printf("Original SEAL dest: |%s|\n\n", strncpy_seal_dest3);
-    strncpy(strncpy_real_dest3, strncpy_src3, 9);
-    sea_strncpy(strncpy_seal_dest3, strncpy_src3, 9);
-    printf("REAL STRNCPY RESULT:  |%s|\n", strncpy_real_dest3);
-    printf("SEAL STRNCPY RESULT:  |%s|\n", strncpy_seal_dest3);
-    printf("(Note: Also not null-terminated)\n");
+  puts("\n---STRLCAT---");
+  {
+    const char *src = " add this";
+    struct { const char* initial_dst; size_t size; } tests[] = {
+        {"start", 20}, {"start", 10}, {"start", 6}, {"start", 0}, {"", 20}
+    };
+    for (int i = 0; i < 5; ++i) {
+        char real_dest[25], seal_dest[25];
+        strcpy(real_dest, tests[i].initial_dst);
+        strcpy(seal_dest, tests[i].initial_dst);
+        size_t real_ret = strlcat(real_dest, src, tests[i].size);
+        size_t seal_ret = sea_strlcat(seal_dest, src, tests[i].size);
+        printf("Test: strlcat(\"%s\", \"%s\", %zu) | Result: \"%s\", ret: %zu -> %s\n",
+               tests[i].initial_dst, src, tests[i].size, seal_dest, seal_ret,
+               (strcmp(real_dest, seal_dest) == 0 && real_ret == seal_ret) ? "OK" : "FAIL");
+    }
+  }
 
+  puts("\n---TOUPPER & TOLOWER---");
+  {
+    char tests[] = {'a', 'Z', 'g', 'H', '5', '#', ' ', '\t', 0};
+    printf("Input | REAL u/l | SEAL u/l | Status\n");
+    printf("------|----------|----------|--------\n");
+    for (int i = 0; tests[i]; i++)
+    {
+        char c = tests[i];
+        int real_upper = toupper(c);
+        int seal_upper = sea_toupper(c);
+        int real_lower = tolower(c);
+        int seal_lower = sea_tolower(c);
+        const char *status = (real_upper == seal_upper && real_lower == seal_lower) ? "OK" : "FAIL";
+        printf("  '%c' |  '%c'/'%c'  |  '%c'/'%c'  | %s\n",
+               c, real_upper, real_lower, seal_upper, seal_lower, status);
+    }
+  }
 
+  puts("\n---STRCHR & STRRCHR ---");
+  {
+    struct TestCase tests[] = {
+        {"hello world", 'l'},
+        {"test", 't'},
+        {"bonjour", 'z'},
+        {"find the end", '\0'},
+        {"abracadabra", 'a'}
+    };
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+    for (int i = 0; i < num_tests; i++) {
+        const char *s = tests[i].string;
+        int c = tests[i].character;
+        char *real_chr = strchr(s, c);
+        char *seal_chr = sea_strchr(s, c);
+        char *real_rchr = strrchr(s, c);
+        char *seal_rchr = sea_strrchr(s, c);
 
-    puts("\n---STRLCPY---");
-    size_t real_ret_val;
-    size_t seal_ret_val;
-    printf("--- STRLCPY Test 1: size < src length (Truncation) ---\n");
-    const char *strlcpy_src1 = "This is a long string"; // Length is 21
-    char strlcpy_real_dest1[25] = "XXXXXXXXXXXXXXXXXXXXXXXX";
-    char strlcpy_seal_dest1[25] = "XXXXXXXXXXXXXXXXXXXXXXXX";
+        printf("strchr(\"%s\", '%c'): -> %s | ", s, c, (real_chr == seal_chr) ? "OK" : "FAIL");
+        printf("strrchr(\"%s\", '%c'): -> %s\n", s, c, (real_rchr == seal_rchr) ? "OK" : "FAIL");
+    }
+  }
+  puts("\n---STRSTR---");
+  {
+    // A structure to hold test cases for clarity
+    struct {
+        const char *haystack;
+        const char *needle;
+    } tests[] = {
+        {"Hello world, this is a test.", "world"}, // Standard case
+        {"Hello world", "earth"},                  // No match
+        {"Another test", ""},                      // Empty needle
+        {"Start of string", "Start"},              // Match at the beginning
+        {"Match at the end", "end"}                // Match at the end
+    };
 
-    printf("Original REAL dest: |%s|\n", strlcpy_real_dest1);
-    printf("Original SEAL dest: |%s|\n\n", strlcpy_seal_dest1);
-    // Copy into a buffer of size 10. Should copy 9 chars + '\0'.
-    real_ret_val = strlcpy(strlcpy_real_dest1, strlcpy_src1, 10);
-    seal_ret_val = sea_strlcpy(strlcpy_seal_dest1, strlcpy_src1, 10);
-    printf("REAL STRLCPY RESULT:  |%s| (return value: %zu)\n", strlcpy_real_dest1, real_ret_val);
-    printf("SEAL STRLCPY RESULT:  |%s| (return value: %zu)\n", strlcpy_seal_dest1, seal_ret_val);
-    printf("(Note: String is correctly truncated and null-terminated)\n");
-    /*
-     * =========================================================================
-     * Test 2: size is LARGER than the source string (Full Copy)
-     *
-     * BEHAVIOR: Copies the entire string with its null terminator.
-     * It does NOT pad the destination with extra nulls like strncpy.
-     * =========================================================================
-     */
-    printf("\n--- STRLCPY Test 2: size > src length (Full Copy) ---\n");
-    const char *strlcpy_src2 = "short"; // Length is 5
-    char strlcpy_real_dest2[25] = "XXXXXXXXXXXXXXXXXXXXXXXX";
-    char strlcpy_seal_dest2[25] = "XXXXXXXXXXXXXXXXXXXXXXXX";
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
 
-    printf("Original REAL dest: |%s|\n", strlcpy_real_dest2);
-    printf("Original SEAL dest: |%s|\n\n", strlcpy_seal_dest2);
-    // Copy into a buffer of size 15.
-    real_ret_val = strlcpy(strlcpy_real_dest2, strlcpy_src2, 15);
-    seal_ret_val = sea_strlcpy(strlcpy_seal_dest2, strlcpy_src2, 15);
-    printf("REAL STRLCPY RESULT:  |%s| (return value: %zu)\n", strlcpy_real_dest2, real_ret_val);
-    printf("SEAL STRLCPY RESULT:  |%s| (return value: %zu)\n", strlcpy_seal_dest2, seal_ret_val);
-    printf("(Note: The full string is copied, with no extra padding)\n");
-    /*
-     * =========================================================================
-     * Test 3: size is EXACTLY enough for the string (Edge Case)
-     *
-     * BEHAVIOR: If size = strlen(src) + 1, it's a perfect fit.
-     * If size = strlen(src), it must truncate to size - 1.
-     * =========================================================================
-     */
-    printf("\n--- STRLCPY Test 3: size == src length (Edge Case Truncation) ---\n");
-    const char *strlcpy_src3 = "EdgeCase"; // Length is 8
-    char strlcpy_real_dest3[25] = "XXXXXXXXXXXXXXXXXXXXXXXX";
-    char strlcpy_seal_dest3[25] = "XXXXXXXXXXXXXXXXXXXXXXXX";
+    for (int i = 0; i < num_tests; i++)
+    {
+        char *real_result = strstr(tests[i].haystack, tests[i].needle);
+        char *seal_result = sea_strstr(tests[i].haystack, tests[i].needle);
 
-    printf("Original REAL dest: |%s|\n", strlcpy_real_dest3);
-    printf("Original SEAL dest: |%s|\n\n", strlcpy_seal_dest3);
-    real_ret_val = strlcpy(strlcpy_real_dest3, strlcpy_src3, 8);
-    seal_ret_val = sea_strlcpy(strlcpy_seal_dest3, strlcpy_src3, 8);
+        printf("Test: strstr(\"%s\", \"%s\") | Result: \"%s\" -> %s\n",
+               tests[i].haystack,
+               tests[i].needle,
+               seal_result ? seal_result : "(null)",
+               (real_result == seal_result) ? "OK" : "FAIL");
+    }
+  }
+puts("\n---STRCMP---");
+  {
+    // A structure to hold strcmp test cases
+    struct {
+        const char *s1;
+        const char *s2;
+    } tests[] = {
+        {"Hello", "Hello"},      // Equal strings
+        {"Hella", "Hello"},      // s1 < s2
+        {"Testing", "Test"},     // s1 > s2 (is a prefix of s1)
+        {"", ""},                // Both empty
+        {"abc", "abd"}           // Difference at the end
+    };
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
 
-    printf("REAL STRLCPY RESULT:  |%s| (return value: %zu)\n", strlcpy_real_dest3, real_ret_val);
-    printf("SEAL STRLCPY RESULT:  |%s| (return value: %zu)\n", strlcpy_seal_dest3, seal_ret_val);
-    printf("(Note: Correctly truncates to fit the required null terminator)\n");
+    for (int i = 0; i < num_tests; i++) {
+        int real_ret = strcmp(tests[i].s1, tests[i].s2);
+        int seal_ret = sea_strcmp(tests[i].s1, tests[i].s2);
 
+        // Normalize results to -1, 0, or 1 to safely compare
+        int real_sign = (real_ret > 0) - (real_ret < 0);
+        int seal_sign = (seal_ret > 0) - (seal_ret < 0);
 
+        printf("Test: strcmp(\"%s\", \"%s\") -> %s\n",
+               tests[i].s1, tests[i].s2,
+               (real_sign == seal_sign) ? "OK" : "FAIL");
+    }
+  }
 
-    puts("\n---STRLCAT---");
-    real_ret_val = 0;
-    seal_ret_val = 0;
+  puts("\n---STRNCMP---");
+  {
+    // A structure to hold strncmp test cases
+    struct {
+        const char *s1;
+        const char *s2;
+        size_t n;
+    } tests[] = {
+        {"Testabc", "Testing", 4}, // Equal for n bytes
+        {"Testabc", "Testing", 7}, // Different before n bytes
+        {"abc", "def", 0},         // n is zero
+        {"abc", "abcdef", 5},      // s1 ends before n
+        {"abc", "abc", 10}         // n is larger than string length
+    };
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
 
-    /*
-     * =========================================================================
-     * Test 1: size is LARGE enough for the full concatenation
-     *
-     * BEHAVIOR: Appends the entire source string and null-terminates it.
-     * =========================================================================
-     */
-    printf("--- STRLCAT Test 1: Full Concatenation ---\n");
-    char strlcat_real_dest1[20] = "Hello";
-    char strlcat_seal_dest1[20] = "Hello";
-    const char *strlcat_src1 = ", World!";
+    for (int i = 0; i < num_tests; i++) {
+        int real_ret = strncmp(tests[i].s1, tests[i].s2, tests[i].n);
+        int seal_ret = sea_strncmp(tests[i].s1, tests[i].s2, tests[i].n);
 
-    // Add placeholder 'X's after the initial string to see the boundary
-    strlcat_real_dest1[11] = 'X';
-    strlcat_seal_dest1[11] = 'X';
+        // Normalize results to -1, 0, or 1 to safely compare
+        int real_sign = (real_ret > 0) - (real_ret < 0);
+        int seal_sign = (seal_ret > 0) - (seal_ret < 0);
 
-    printf("Original REAL dest: |%s|\n", strlcat_real_dest1);
-    printf("Original SEAL dest: |%s|\n\n", strlcat_seal_dest1);
+        printf("Test: strncmp(\"%s\", \"%s\", %zu) -> %s\n",
+               tests[i].s1, tests[i].s2, tests[i].n,
+               (real_sign == seal_sign) ? "OK" : "FAIL");
+    }
+  }
+  puts("\n---STRNSTR---");
+  {
+    // A structure to hold strnstr test cases
+    struct {
+        const char *haystack;
+        const char *needle;
+        size_t n;
+    } tests[] = {
+        {"lorem ipsum dolor sit amet", "ipsum", 20}, // Standard match
+        {"lorem ipsum dolor sit amet", "dolor", 10}, // Match exists, but its start is after n
+        {"find the needle here", "needle", 20},      // Another standard match
+        {"a test with an empty needle", "", 5},      // Empty needle
+        {"short", "a longer needle", 5}              // Needle is longer than haystack
+    };
 
-    // Concatenate into a buffer of size 20. Initial len 5 + src len 8 = 13. Fits easily.
-    real_ret_val = strlcat(strlcat_real_dest1, strlcat_src1, 20);
-    seal_ret_val = sea_strlcat(strlcat_seal_dest1, strlcat_src1, 20);
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
 
-    printf("REAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_real_dest1, real_ret_val);
-    printf("SEAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_seal_dest1, seal_ret_val);
-    printf("(Note: Full string is appended correctly)\n");
+    for (int i = 0; i < num_tests; i++)
+    {
+        char *real_result = strnstr(tests[i].haystack, tests[i].needle, tests[i].n);
+        char *seal_result = sea_strnstr(tests[i].haystack, tests[i].needle, tests[i].n);
 
+        printf("Test: strnstr(\"%s\", \"%s\", %zu) | Result: \"%s\" -> %s\n",
+               tests[i].haystack,
+               tests[i].needle,
+               tests[i].n,
+               seal_result ? seal_result : "(null)",
+               (real_result == seal_result) ? "OK" : "FAIL");
+    }
+  }
 
-    /*
-     * =========================================================================
-     * Test 2: size is SMALLER than the required space (Truncation)
-     *
-     * BEHAVIOR: Appends as many characters as possible and guarantees
-     * null-termination. The return value should be the total length of
-     * what it TRIED to create.
-     * =========================================================================
-     */
-    printf("\n--- STRLCAT Test 2: Truncation ---\n");
-    char strlcat_real_dest2[10] = "abcde";
-    char strlcat_seal_dest2[10] = "abcde";
-    const char *strlcat_src2 = "fghij";
-
-    printf("Original REAL dest: |%s|\n", strlcat_real_dest2);
-    printf("Original SEAL dest: |%s|\n\n", strlcat_seal_dest2);
-
-    // Concatenate into a buffer of size 10. Dst len 5 + src len 5 = 10.
-    // Needs space for 9 chars + null. Will copy "fghi" (4 chars).
-    real_ret_val = strlcat(strlcat_real_dest2, strlcat_src2, 10);
-    seal_ret_val = sea_strlcat(strlcat_seal_dest2, strlcat_src2, 10);
-
-    printf("REAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_real_dest2, real_ret_val);
-    printf("SEAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_seal_dest2, seal_ret_val);
-    printf("(Note: String is truncated but safely null-terminated)\n");
-
-    /*
-     * =========================================================================
-     * Test 3: Destination string already fills the buffer (Edge Case)
-     *
-     * BEHAVIOR: Nothing is copied. The destination string remains untouched.
-     * The return value should be size + strlen(src).
-     * =========================================================================
-     */
-    printf("\n--- STRLCAT Test 3: Destination is Full ---\n");
-    char strlcat_real_dest3[5] = "abcd";
-    char strlcat_seal_dest3[5] = "abcd";
-    const char *strlcat_src3 = "efgh";
-
-    printf("Original REAL dest: |%s|\n", strlcat_real_dest3);
-    printf("Original SEAL dest: |%s|\n\n", strlcat_seal_dest3);
-    // Concatenate into a buffer of size 5. Dst len is 4. Null is at index 4.
-    // The string already takes up the whole buffer. No space left.
-    real_ret_val = strlcat(strlcat_real_dest3, strlcat_src3, 5);
-    seal_ret_val = sea_strlcat(strlcat_seal_dest3, strlcat_src3, 5);
-
-    printf("REAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_real_dest3, real_ret_val);
-    printf("SEAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_seal_dest3, seal_ret_val);
-    printf("(Note: Nothing is copied, and return value indicates truncation)\n");
-
-  puts("Done!");
+  puts("\nDone!");
   return (0);
 }
