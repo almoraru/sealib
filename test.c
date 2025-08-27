@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:38:40 by espadara                              */
-/*      Updated: 2025/08/26 23:25:18 by espadara                              */
+/*      Updated: 2025/08/27 13:32:22 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,41 @@ SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isprint(250), isprint('0'), \
    printf("REAL STRCPY RESULT: |%s|\n", strcpy_real_dest);
    sea_strcpy(strcpy_seal_dest, strcpy_src);
    printf("SEAL STRCPY RESULT: |%s|\n", strcpy_seal_dest);
+
+   puts("\n---STRNCPY---");
+   printf("--- STRNCPY Test 1: n < src length ---\n");
+    const char *strncpy_src1 = "Hello World"; // Length is 11
+    char strncpy_real_dest1[20] = "XXXXXXXXXXXXXXXXXXX";
+    char strncpy_seal_dest1[20] = "XXXXXXXXXXXXXXXXXXX";
+    printf("Original REAL dest: |%s|\n", strncpy_real_dest1);
+    printf("Original SEAL dest: |%s|\n\n", strncpy_seal_dest1);
+    strncpy(strncpy_real_dest1, strncpy_src1, 5);
+    sea_strncpy(strncpy_seal_dest1, strncpy_src1, 5);
+    printf("REAL STRNCPY RESULT:  |%s|\n", strncpy_real_dest1);
+    printf("SEAL STRNCPY RESULT:  |%s|\n", strncpy_seal_dest1);
+    printf("(Note: The result is not null-terminated)\n");
+    printf("\n--- STRNCPY Test 2: n > src length ---\n");
+    const char *strncpy_src2 = "test"; // Length is 4
+    char strncpy_real_dest2[20] = "XXXXXXXXXXXXXXXXXXX";
+    char strncpy_seal_dest2[20] = "XXXXXXXXXXXXXXXXXXX";
+    printf("Original REAL dest: |%s|\n", strncpy_real_dest2);
+    printf("Original SEAL dest: |%s|\n\n", strncpy_seal_dest2);
+    strncpy(strncpy_real_dest2, strncpy_src2, 10);
+    sea_strncpy(strncpy_seal_dest2, strncpy_src2, 10);
+    printf("REAL STRNCPY RESULT:  |%s|\n", strncpy_real_dest2);
+    printf("SEAL STRNCPY RESULT:  |%s|\n", strncpy_seal_dest2);
+    printf("(Note: The result is correctly null-terminated by padding)\n");
+    printf("\n--- STRNCPY Test 3: n == src length ---\n");
+    const char *strncpy_src3 = "Exact Fit"; // Length is 9
+    char strncpy_real_dest3[20] = "XXXXXXXXXXXXXXXXXXX";
+    char strncpy_seal_dest3[20] = "XXXXXXXXXXXXXXXXXXX";
+    printf("Original REAL dest: |%s|\n", strncpy_real_dest3);
+    printf("Original SEAL dest: |%s|\n\n", strncpy_seal_dest3);
+    strncpy(strncpy_real_dest3, strncpy_src3, 9);
+    sea_strncpy(strncpy_seal_dest3, strncpy_src3, 9);
+    printf("REAL STRNCPY RESULT:  |%s|\n", strncpy_real_dest3);
+    printf("SEAL STRNCPY RESULT:  |%s|\n", strncpy_seal_dest3);
+    printf("(Note: Also not null-terminated)\n");
 
   puts("Done!");
   return (0);
