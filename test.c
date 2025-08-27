@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:38:40 by espadara                              */
-/*      Updated: 2025/08/27 19:58:46 by espadara                              */
+/*      Updated: 2025/08/27 21:36:57 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,6 +272,87 @@ SEAL: |%d| |%d| |%d|\n", 250, '0', ')', isprint(250), isprint('0'), \
 
 
 
+    puts("\n---STRLCAT---");
+    real_ret_val = 0;
+    seal_ret_val = 0;
+
+    /*
+     * =========================================================================
+     * Test 1: size is LARGE enough for the full concatenation
+     *
+     * BEHAVIOR: Appends the entire source string and null-terminates it.
+     * =========================================================================
+     */
+    printf("--- STRLCAT Test 1: Full Concatenation ---\n");
+    char strlcat_real_dest1[20] = "Hello";
+    char strlcat_seal_dest1[20] = "Hello";
+    const char *strlcat_src1 = ", World!";
+
+    // Add placeholder 'X's after the initial string to see the boundary
+    strlcat_real_dest1[11] = 'X';
+    strlcat_seal_dest1[11] = 'X';
+
+    printf("Original REAL dest: |%s|\n", strlcat_real_dest1);
+    printf("Original SEAL dest: |%s|\n\n", strlcat_seal_dest1);
+
+    // Concatenate into a buffer of size 20. Initial len 5 + src len 8 = 13. Fits easily.
+    real_ret_val = strlcat(strlcat_real_dest1, strlcat_src1, 20);
+    seal_ret_val = sea_strlcat(strlcat_seal_dest1, strlcat_src1, 20);
+
+    printf("REAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_real_dest1, real_ret_val);
+    printf("SEAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_seal_dest1, seal_ret_val);
+    printf("(Note: Full string is appended correctly)\n");
+
+
+    /*
+     * =========================================================================
+     * Test 2: size is SMALLER than the required space (Truncation)
+     *
+     * BEHAVIOR: Appends as many characters as possible and guarantees
+     * null-termination. The return value should be the total length of
+     * what it TRIED to create.
+     * =========================================================================
+     */
+    printf("\n--- STRLCAT Test 2: Truncation ---\n");
+    char strlcat_real_dest2[10] = "abcde";
+    char strlcat_seal_dest2[10] = "abcde";
+    const char *strlcat_src2 = "fghij";
+
+    printf("Original REAL dest: |%s|\n", strlcat_real_dest2);
+    printf("Original SEAL dest: |%s|\n\n", strlcat_seal_dest2);
+
+    // Concatenate into a buffer of size 10. Dst len 5 + src len 5 = 10.
+    // Needs space for 9 chars + null. Will copy "fghi" (4 chars).
+    real_ret_val = strlcat(strlcat_real_dest2, strlcat_src2, 10);
+    seal_ret_val = sea_strlcat(strlcat_seal_dest2, strlcat_src2, 10);
+
+    printf("REAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_real_dest2, real_ret_val);
+    printf("SEAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_seal_dest2, seal_ret_val);
+    printf("(Note: String is truncated but safely null-terminated)\n");
+
+    /*
+     * =========================================================================
+     * Test 3: Destination string already fills the buffer (Edge Case)
+     *
+     * BEHAVIOR: Nothing is copied. The destination string remains untouched.
+     * The return value should be size + strlen(src).
+     * =========================================================================
+     */
+    printf("\n--- STRLCAT Test 3: Destination is Full ---\n");
+    char strlcat_real_dest3[5] = "abcd";
+    char strlcat_seal_dest3[5] = "abcd";
+    const char *strlcat_src3 = "efgh";
+
+    printf("Original REAL dest: |%s|\n", strlcat_real_dest3);
+    printf("Original SEAL dest: |%s|\n\n", strlcat_seal_dest3);
+    // Concatenate into a buffer of size 5. Dst len is 4. Null is at index 4.
+    // The string already takes up the whole buffer. No space left.
+    real_ret_val = strlcat(strlcat_real_dest3, strlcat_src3, 5);
+    seal_ret_val = sea_strlcat(strlcat_seal_dest3, strlcat_src3, 5);
+
+    printf("REAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_real_dest3, real_ret_val);
+    printf("SEAL STRLCAT RESULT:  |%s| (return value: %zu)\n", strlcat_seal_dest3, seal_ret_val);
+    printf("(Note: Nothing is copied, and return value indicates truncation)\n");
 
   puts("Done!");
   return (0);

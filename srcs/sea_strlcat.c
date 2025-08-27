@@ -15,47 +15,30 @@
 /*       > _.="                            "=._ <                             */
 /*      (_/                                    \_)                            */
 /*                                                                            */
-/*      Filename: sealib.h                                                    */
+/*      Filename: sea_strlcat.c                                               */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
-/*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/08/27 20:01:49 by espadara                              */
+/*      Created: 2025/08/27 20:01:39 by espadara                              */
+/*      Updated: 2025/08/27 20:11:12 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SEALIB_H
-# define SEALIB_H
+#include "sealib.h"
 
-/* INCLUDES */
+size_t	sea_strlcat(char *dst, const char *src, size_t size)
+{
+  size_t dst_len = 0;
+  size_t src_len = sea_strlen(src);
+  size_t i = 0;
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <ctype.h>
-# include <string.h>
-/* DEFINES  */
-
-
-
-/* FUNCTIONS */
-
-/* BOOLEANS  */
-int	sea_isalpha(int c);
-int	sea_isdigit(int c);
-int	sea_isalnum(int c);
-int	sea_isascii(int c);
-int	sea_isprint(int c);
-
-/* STRINGS */
-size_t	sea_strlen(const char *s);
-char	*sea_strcpy(char *dest, const char *src);
-char	*sea_strncpy(char *dest, const char *src, size_t dsize);
-size_t	sea_strlcpy(char *dst, const char *src, size_t size);
-size_t	sea_strlcat(char *dst, const char *src, size_t size);
-void	*sea_bzero(void *s, size_t n);
-
-/* MEMORY */
-void	*sea_memset(void *s, int c, size_t n);
-void	*sea_memcpy(void *dest, const void *src, size_t n);
-void	*sea_memmove(void *dest, const void *src, size_t n);
-
-#endif
+  while (dst[dst_len] && dst_len < size)
+    dst_len++;
+  if (dst_len >= size)
+    return(size + src_len);
+  while (src[i] && (dst_len + i) < (size - 1))
+    {
+      dst[dst_len + i] = src[i];
+      i++;
+    }
+  dst[dst_len + i] = 0;
+  return (dst_len + src_len);
+}
