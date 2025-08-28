@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/08/28 17:56:29 by espadara                              */
+/*      Updated: 2025/08/28 23:28:05 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	sea_isdigit(int c);
 int	sea_isalnum(int c);
 int	sea_isascii(int c);
 int	sea_isprint(int c);
-
+int	sea_iswhitespace(char c);
 
 /* STRINGS */
 size_t	sea_strlen(const char *s);
@@ -69,5 +69,8 @@ void	*sea_memcpy(void *dest, const void *src, size_t n);
 void	*sea_memmove(void *dest, const void *src, size_t n);
 void	*sea_memchr(void *s, int c, size_t n);
 int	sea_memcmp(const char *s1, const char *s2, size_t n);
+
+/* CONVERSIONS */
+int	sea_atoi(const char *nptr);
 
 #endif

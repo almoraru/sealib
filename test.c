@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/28 18:01:04 by espadara                              */
+/*      Updated: 2025/08/28 23:32:22 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -433,6 +433,68 @@ puts("\n---STRCMP---");
                (test_passed) ? "OK" : "FAIL");
       }
   }
+
+  puts("\n---ISWHITESPACE---");
+  {
+    // Array of characters to test
+    char tests[] = {
+        ' ',      // Space
+        '\t',     // Tab
+        '\n',     // Newline
+        '\v',     // Vertical Tab
+        '\f',     // Form Feed
+        '\r',     // Carriage Return
+        'a',      // Lowercase letter
+        'Z',      // Uppercase letter
+        '7',      // Digit
+        '@',      // Symbol
+        0         // Null terminator for the loop
+    };
+
+    for (int i = 0; tests[i] != 0; i++)
+    {
+        char c = tests[i];
+        int real_result = isspace(c);
+        int seal_result = sea_iswhitespace(c);
+
+        printf("Test char (ASCII: %d): REAL=%d, SEAL=%d -> %s\n",
+               c,
+               real_result,
+               seal_result,
+               (!!real_result == !!seal_result) ? "OK" : "FAIL");
+    }
+  }
+  puts("\n---ATOI---");
+  {
+    // A structure to hold atoi test cases
+    struct {
+        const char *str;
+    } tests[] = {
+        {"123"},
+        {"-456"},
+        {"+789"},
+        {"  -42"},
+        {"99balloons"},
+        {"word"},
+        {"+-5"},
+        {"--2"}
+    };
+
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        int real_result = atoi(tests[i].str);
+        int seal_result = sea_atoi(tests[i].str);
+
+        printf("Test: atoi(\"%s\") | REAL: %d, SEAL: %d -> %s\n",
+               tests[i].str,
+               real_result,
+               seal_result,
+               (real_result == seal_result) ? "OK" : "FAIL");
+    }
+  }
+
   puts("\nDone!");
   return (0);
 }
