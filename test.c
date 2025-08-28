@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/28 08:45:44 by espadara                              */
+/*      Updated: 2025/08/28 18:01:04 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -390,6 +390,48 @@ puts("\n---STRCMP---");
                tests[i].size,
                (real_result == seal_result) ? "OK" : "FAIL");
     }
+  }
+  puts("\n---MEMCMP---");
+  {
+    struct {
+      const char *s1;
+      const char *s2;
+      size_t size;
+      const char *description;
+      int expected_sign; // 1 for positive, -1 for negative, 0 for zero
+    } tests[] = {
+      {"abcdef", "abcdef", 6, "Identical Blocks", 0},
+      {"abcdeg", "abcdef", 6, "First Mismatch Positive", 1},
+      {"abcdef", "abcdeg", 6, "First Mismatch Negative", -1},
+      {"abcdef", "abc", 3, "Identical Up to n", 0},
+      {"abcdef", "abcdeg", 3, "Different After n", 0},
+      {"\0ghi", "\0jkl", 4, "Blocks With Null", -1},
+      {"", "", 0, "Empty Blocks", 0},
+      {"abc", "abx", 3, "Mismatch at End", -1},
+    };
+
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+      {
+        int real_result = memcmp(tests[i].s1, tests[i].s2, tests[i].size);
+        int sea_result = sea_memcmp(tests[i].s1, tests[i].s2, tests[i].size);
+        int real_sign = (real_result > 0) ? 1 : (real_result < 0 ? -1 : 0);
+        int sea_sign = (sea_result > 0) ? 1 : (sea_result < 0 ? -1 : 0);
+        int test_passed = (real_sign == sea_sign);
+        if (test_passed && tests[i].expected_sign == 0) {
+          test_passed = (real_result == sea_result);
+        }
+
+        printf("Test: %-25s | s1: \"%.*s\" | s2: \"%.*s\" | n: %zu -> %s\n",
+               tests[i].description,
+               (int)tests[i].size,
+               tests[i].s1,
+               (int)tests[i].size,
+               tests[i].s2,
+               tests[i].size,
+               (test_passed) ? "OK" : "FAIL");
+      }
   }
   puts("\nDone!");
   return (0);
