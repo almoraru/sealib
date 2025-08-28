@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/27 23:18:01 by espadara                              */
+/*      Updated: 2025/08/28 08:45:44 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -358,7 +358,39 @@ puts("\n---STRCMP---");
                (real_result == seal_result) ? "OK" : "FAIL");
     }
   }
+  puts("\n---MEMCHR---");
+  {
+    // A special memory block containing a null byte to test against.
+    char mem_with_null[] = {'a', 'b', '\0', 'd', 'e'};
 
+    // A structure to hold the test cases
+    struct {
+        const void *mem_block;
+        int char_to_find;
+        size_t size;
+        const char *description;
+    } tests[] = {
+        {"abcdef", 'c', 6, "Standard Match"},
+        {"abcdef", 'x', 6, "No Match"},
+        {mem_with_null, 'd', 5, "Match After Null"},
+        {mem_with_null, '\0', 5, "Find Null Byte"},
+        {"abcdef", 'f', 4, "Match Outside n"}
+    };
+
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        void *real_result = memchr(tests[i].mem_block, tests[i].char_to_find, tests[i].size);
+        void *seal_result = sea_memchr((void *)tests[i].mem_block, tests[i].char_to_find, tests[i].size);
+
+        printf("Test: %-18s (char: '%c', n: %zu) -> %s\n",
+               tests[i].description,
+               (char)tests[i].char_to_find,
+               tests[i].size,
+               (real_result == seal_result) ? "OK" : "FAIL");
+    }
+  }
   puts("\nDone!");
   return (0);
 }
