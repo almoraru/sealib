@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/08/23 15:29:20 by espadara                                #
-#      Updated: 2025/08/28 23:27:58 by espadara                                #
+#      Updated: 2025/08/28 23:41:55 by espadara                                #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -37,7 +37,7 @@ SOURCES = sea_isalpha.c sea_isdigit.c sea_isalnum.c sea_isascii.c sea_isprint.c 
 	sea_strcpy.c sea_strncpy.c sea_strlcpy.c sea_strlcat.c sea_toupper.c 		\
 	sea_tolower.c sea_strchr.c sea_strrchr.c sea_strstr.c sea_strncmp.c			\
 	sea_strcmp.c sea_strnstr.c sea_memchr.c	sea_memcmp.c sea_atoi.c 			\
-	sea_iswhitespace.c
+	sea_iswhitespace.c sea_atoi_base.c sea_atof.c
 
 SRCS =  $(addprefix $(SRCS_PATH), $(SOURCES))
 

@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/08/28 23:28:05 by espadara                              */
+/*      Updated: 2025/08/28 23:48:35 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 # include <ctype.h>
 # include <string.h>
 # include <bsd/string.h>
+# include <math.h>
 /* DEFINES  */
 
 
@@ -72,5 +73,6 @@ int	sea_memcmp(const char *s1, const char *s2, size_t n);
 
 /* CONVERSIONS */
 int	sea_atoi(const char *nptr);
-
+int	sea_atoi_base(const char *str, int base);
+double	sea_atof(const char *str);
 #endif

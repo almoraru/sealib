@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/28 23:32:22 by espadara                              */
+/*      Updated: 2025/08/28 23:49:03 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -494,7 +494,66 @@ puts("\n---STRCMP---");
                (real_result == seal_result) ? "OK" : "FAIL");
     }
   }
+  puts("\n---ATOI_BASE---");
+  {
+    struct {
+        const char *str;
+        int base;
+    } tests[] = {
+        {"123", 10},                      // Standard decimal
+        {"  -ff", 16},                    // Hexadecimal with whitespace and sign
+        {"10110", 2},                     // Binary
+        {"1274", 8},                      // Octal with an invalid digit '7'
+        {" \n\t+aB", 12}                  // Base 12 with mixed case and whitespace
+    };
 
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        // The real function for this is strtol(string, NULL, base)
+        int real_result = (int)strtol(tests[i].str, NULL, tests[i].base);
+        int seal_result = sea_atoi_base(tests[i].str, tests[i].base);
+
+        printf("Test: atoi_base(\"%s\", %d) | REAL: %d, SEAL: %d -> %s\n",
+               tests[i].str,
+               tests[i].base,
+               real_result,
+               seal_result,
+               (real_result == seal_result) ? "OK" : "FAIL");
+    }
+
+  }
+  puts("\n---ATOF---");
+  {
+
+    #define EPSILON 1e-9
+
+    struct {
+        const char *str;
+    } tests[] = {
+        {"123.456"},
+        {"  -0.0123"},
+        {"+500"},
+        {".789"},
+        {"42.9abc"}
+    };
+
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        double real_result = atof(tests[i].str);
+        double seal_result = sea_atof(tests[i].str);
+
+        // CORRECT WAY TO COMPARE: Check if the absolute difference is negligible
+        printf("Test: atof(\"%s\") | REAL: %f, SEAL: %f -> %s\n",
+               tests[i].str,
+               real_result,
+               seal_result,
+               (fabs(real_result - seal_result) < EPSILON) ? "OK" : "FAIL");
+    }
+  }
   puts("\nDone!");
   return (0);
 }
