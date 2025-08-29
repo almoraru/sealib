@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/08/29 23:24:37 by espadara                              */
+/*      Updated: 2025/08/29 23:50:38 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 # include <string.h>
 # include <bsd/string.h>
 # include <math.h>
+# include <immintrin.h>
 
 /* DEFINES  */
 
@@ -91,6 +92,7 @@ int	sea_memcmp(const char *s1, const char *s2, size_t n);
 t_mem	*sea_arena_init(size_t size);
 void	*sea_arena_alloc(t_mem *arena, size_t size);
 void	sea_arena_free(t_mem *arena);
+void	*sea_memcpy_fast(void *dest, const void *src, size_t n);
 
 /* CONVERSIONS */
 int	sea_atoi(const char *nptr);

@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/29 23:28:10 by espadara                              */
+/*      Updated: 2025/08/29 23:50:16 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -639,6 +639,45 @@ puts("\n---STRCMP---");
 
     sea_arena_free(NULL);
     PRINT_TEST("Freeing a NULL arena does not crash", 1);
+  }
+  void *sea_memcpy_fast(void *dest, const void *src, size_t n);
+
+  puts("\n---MEMCPY_FAST---");
+  {
+    // A structure to hold memcpy test cases
+    struct {
+        size_t n;
+        const char *description;
+    } tests[] = {
+        {0, "Zero-length copy"},
+        {5, "Small copy (non-SIMD path)"},
+        {15, "Boundary copy (non-SIMD path)"},
+        {16, "Boundary copy (1 SIMD block)"},
+        {17, "1 SIMD block + 1 byte tail"},
+        {32, "2 full SIMD blocks"},
+        {40, "2 SIMD blocks + 8 byte tail"},
+        {100, "Large unaligned copy"},
+        {8, "Copy data with null bytes"},
+        {25, "Full buffer copy"}
+    };
+
+    const char *source_data = "This is the source string\0with nulls inside.";
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        // Allocate and prepare fresh buffers for each test
+        char real_dest[128] = {0};
+        char seal_dest[128] = {0};
+
+        memcpy(real_dest, source_data, tests[i].n);
+        sea_memcpy_fast(seal_dest, source_data, tests[i].n);
+
+        printf("Test: %-32s (n=%zu) -> %s\n",
+               tests[i].description,
+               tests[i].n,
+               (memcmp(real_dest, seal_dest, sizeof(real_dest)) == 0) ? "OK" : "FAIL");
+    }
   }
   puts("\nDone!");
   return (0);

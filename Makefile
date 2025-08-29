@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/08/23 15:29:20 by espadara                                #
-#      Updated: 2025/08/29 23:23:11 by espadara                                #
+#      Updated: 2025/08/29 23:49:57 by espadara                                #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -30,7 +30,7 @@ NAME = sealib.a
 
 INC = -I ./includes/
 
-FLAGS = -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror -msse2
 
 SOURCES = sea_isalpha.c sea_isdigit.c sea_isalnum.c sea_isascii.c sea_isprint.c \
 	sea_strlen.c sea_memset.c sea_bzero.c sea_memcpy.c sea_memmove.c			\
@@ -38,7 +38,7 @@ SOURCES = sea_isalpha.c sea_isdigit.c sea_isalnum.c sea_isascii.c sea_isprint.c 
 	sea_tolower.c sea_strchr.c sea_strrchr.c sea_strstr.c sea_strncmp.c			\
 	sea_strcmp.c sea_strnstr.c sea_memchr.c	sea_memcmp.c sea_atoi.c 			\
 	sea_iswhitespace.c sea_atoi_base.c sea_atof.c sea_arena_init.c				\
-	sea_arena_alloc.c sea_arena_free.c
+	sea_arena_alloc.c sea_arena_free.c sea_memcpy_fast.c
 
 SRCS =  $(addprefix $(SRCS_PATH), $(SOURCES))
 
