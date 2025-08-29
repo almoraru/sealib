@@ -18,12 +18,15 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/28 23:49:03 by espadara                              */
+/*      Updated: 2025/08/29 23:28:10 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "sealib.h"
+
+#define PRINT_TEST(description, condition)                              \
+    printf("  Test: %-50s -> %s\n", description, (condition) ? "OK" : "FAIL")
 
 /* TEST STRUCTS */
 struct TestCase {
@@ -553,6 +556,89 @@ puts("\n---STRCMP---");
                seal_result,
                (fabs(real_result - seal_result) < EPSILON) ? "OK" : "FAIL");
     }
+  }
+  puts("\n---ARENA ALLOCATOR---");
+  {
+    t_mem *arena = NULL;
+    void *p1, *p2, *p3;
+
+    // --- Initialization Tests ---
+    printf("\n## Initialization\n");
+    arena = sea_arena_init(0);
+    PRINT_TEST("Initialize with size 0 returns non-NULL", arena != NULL);
+    if (arena) {
+        PRINT_TEST("Initialize with size 0 uses default size", arena->total == ARENA_DEFAULT);
+    }
+    sea_arena_free(arena);
+
+    arena = sea_arena_init(128);
+    PRINT_TEST("Initialize with custom size (128) returns non-NULL", arena != NULL);
+    if (arena) {
+        PRINT_TEST("Initialize with custom size (128) is correct", arena->total == 128);
+    }
+    sea_arena_free(arena);
+
+    // --- Basic Allocation & Alignment Tests ---
+    printf("\n## Basic Allocation & Alignment\n");
+    arena = sea_arena_init(100); // Using a small size for easy testing
+    p1 = sea_arena_alloc(arena, 1);
+    PRINT_TEST("First allocation (1 byte) is not NULL", p1 != NULL);
+    PRINT_TEST("Used size reflects alignment (1 byte -> 16)", arena ? arena->used == 16 : 0);
+
+    p2 = sea_arena_alloc(arena, 10);
+    PRINT_TEST("Second allocation (10 bytes) is not NULL", p2 != NULL);
+    PRINT_TEST("Second allocation is at correct offset", p2 == (void*)(arena->mem + 16));
+    PRINT_TEST("Used size is now 32 (16 + 16)", arena ? arena->used == 32 : 0);
+
+    // --- Data Integrity Test ---
+    strcpy((char*)p2, "testing");
+    PRINT_TEST("Data integrity check", strcmp((char*)p2, "testing") == 0);
+    sea_arena_free(arena);
+
+    // --- Edge Case Allocation Tests ---
+    printf("\n## Edge Case Allocations\n");
+    arena = sea_arena_init(100);
+    PRINT_TEST("Allocate 0 bytes returns NULL", sea_arena_alloc(arena, 0) == NULL);
+    PRINT_TEST("Allocate from a NULL arena returns NULL", sea_arena_alloc(NULL, 10) == NULL);
+
+    p1 = sea_arena_alloc(arena, 100 - ARENA_ALIGN); // Allocate almost everything
+    p2 = sea_arena_alloc(arena, ARENA_ALIGN);       // Allocate the rest
+    PRINT_TEST("Allocate exact remaining space works", p2 != NULL);
+    sea_arena_free(arena);
+
+    // --- Chaining Logic Tests ---
+    printf("\n## Chaining Logic\n");
+    arena = sea_arena_init(64); // Tiny arena to force chaining
+    sea_arena_alloc(arena, 32);
+    sea_arena_alloc(arena, 32); // Block 1 is now full (32+32=64)
+    PRINT_TEST("First block is full", arena ? arena->used == 64 : 0);
+    PRINT_TEST("No second block exists yet", arena ? arena->next == NULL : 0);
+
+    p1 = sea_arena_alloc(arena, 1); // This should trigger chaining
+    PRINT_TEST("Allocation triggering a new block is not NULL", p1 != NULL);
+    PRINT_TEST("A second block was created", arena ? arena->next != NULL : 0);
+    if (arena && arena->next) {
+        PRINT_TEST("New block has correct used size (1 byte -> 16)", arena->next->used == 16);
+    }
+
+    // --- Large Allocation Test ---
+    p2 = sea_arena_alloc(arena, ARENA_DEFAULT + 100); // Request larger than default
+    PRINT_TEST("Large allocation ( > default) succeeds", p2 != NULL);
+    if(arena && arena->next) {
+        PRINT_TEST("Large allocation created a correctly sized block", arena->next->next->total >= ARENA_DEFAULT + 100);
+    }
+    sea_arena_free(arena);
+
+    // --- Freeing Logic Tests ---
+    printf("\n## Freeing Logic\n");
+    arena = sea_arena_init(100);
+    sea_arena_alloc(arena, 1000); // Create a chain of 2 blocks
+    sea_arena_alloc(arena, 5000); // Create a chain of 3 blocks
+    sea_arena_free(arena);
+    PRINT_TEST("Freeing a chain of blocks (check with Valgrind)", 1); // This test passes if it doesn't crash
+
+    sea_arena_free(NULL);
+    PRINT_TEST("Freeing a NULL arena does not crash", 1);
   }
   puts("\nDone!");
   return (0);
