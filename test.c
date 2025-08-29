@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/29 23:50:16 by espadara                              */
+/*      Updated: 2025/08/30 00:10:34 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -678,6 +678,98 @@ puts("\n---STRCMP---");
                tests[i].n,
                (memcmp(real_dest, seal_dest, sizeof(real_dest)) == 0) ? "OK" : "FAIL");
     }
+  }
+  puts("\n---STRDUP (HEAP)---");
+  {
+    // A structure to hold the test cases
+    struct {
+        const char *source;
+        const char *description;
+    } tests[] = {
+        {"A normal string", "Standard string"},
+        {"", "Empty string"},
+        {"a", "Single character string"},
+        {"A very long string designed to trigger the fast SIMD copy path.", "Long string (SIMD)"},
+        {"\t\n a string with whitespace \t\n", "String with whitespace"},
+        {NULL, "NULL pointer input"}
+    };
+    int num_tests = 6;
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        // Test strdup itself
+        char *seal_result = sea_strdup(tests[i].source);
+        if (tests[i].source == NULL) {
+            printf("Test: %-30s -> %s\n", "strdup(NULL)", (seal_result == NULL) ? "OK" : "FAIL");
+        } else {
+            int is_ok = (seal_result != NULL && strcmp(seal_result, tests[i].source) == 0);
+            printf("Test: %-30s -> %s\n", tests[i].description, is_ok ? "OK" : "FAIL");
+        }
+        free(seal_result); // Must free the heap-allocated memory
+    }
+
+    // Additional specific tests
+    char original[] = "original";
+    char *dup = sea_strdup(original);
+    strcpy(original, "changed");
+    printf("Test: %-30s -> %s\n", "Memory independence", (dup && strcmp(dup, "original") == 0) ? "OK" : "FAIL");
+    free(dup);
+
+    dup = sea_strdup("test");
+    printf("Test: %-30s -> %s\n", "Pointer is a new address", (dup != (void*)"test") ? "OK" : "FAIL");
+    free(dup);
+
+    dup = sea_strdup("len_check");
+    printf("Test: %-30s -> %s\n", "Correct length + null terminator", (strlen(dup) == 9) ? "OK" : "FAIL");
+    free(dup);
+
+    dup = sea_strdup("another");
+    printf("Test: %-30s -> %s\n", "Final sanity check", (strcmp(dup, "another") == 0) ? "OK" : "FAIL");
+    free(dup);
+  }
+
+  puts("\n---ARENA_STRDUP (ARENA)---");
+  {
+    t_mem *arena = NULL;
+    char *s1, *s2;
+
+    printf("Test: %-45s -> %s\n", "Arena initialization", (arena = sea_arena_init(64)) != NULL);
+
+    // Test 1 & 2: Standard duplication and 'used' pointer check
+    s1 = sea_arena_strdup(arena, "first");
+    printf("Test: %-45s -> %s\n", "Standard arena duplication", (strcmp(s1, "first") == 0) ? "OK" : "FAIL");
+    size_t expected_used = (strlen("first") + 1 + ARENA_ALIGN - 1) & ~(ARENA_ALIGN - 1);
+    printf("Test: %-45s -> %s\n", "Arena 'used' pointer advancement", (arena->used == expected_used) ? "OK" : "FAIL");
+
+    // Test 4 & 5: Handle NULL inputs gracefully
+    printf("Test: %-45s -> %s\n", "arena_strdup(arena, NULL)", (sea_arena_strdup(arena, NULL) == NULL) ? "OK" : "FAIL");
+    printf("Test: %-45s -> %s\n", "arena_strdup(NULL, src)", (sea_arena_strdup(NULL, "test") == NULL) ? "OK" : "FAIL");
+
+    // -- The New, More Robust Chaining Test --
+    // We know 16 bytes are used. The total is 64. Remaining is 48.
+    // Let's allocate exactly 48 bytes to fill the block. (3 * 16 = 48)
+    sea_arena_alloc(arena, 1); // Uses 16 bytes. Total used: 32
+    sea_arena_alloc(arena, 1); // Uses 16 bytes. Total used: 48
+    sea_arena_alloc(arena, 1); // Uses 16 bytes. Total used: 64. BLOCK IS NOW FULL.
+
+    printf("Test: %-45s -> %s\n", "First block is now full", (arena->used == 64) ? "OK" : "FAIL");
+    printf("Test: %-45s -> %s\n", "No second block exists yet", (arena->next == NULL) ? "OK" : "FAIL");
+
+    // This next allocation is GUARANTEED to fail in the first block.
+    s2 = sea_arena_strdup(arena, "chain");
+
+    printf("Test: %-45s -> %s\n", "Allocation forces a new block", (arena->next != NULL) ? "OK" : "FAIL");
+
+    int is_in_new_block = 0;
+    if (arena->next) { // Check if arena->next is valid before dereferencing
+        is_in_new_block = (s2 >= (char*)arena->next->mem && s2 < (char*)arena->next->mem + arena->next->total);
+    }
+    printf("Test: %-45s -> %s\n", "Pointer is in the new arena block", is_in_new_block ? "OK" : "FAIL");
+
+    // Final check that old data is still valid
+    printf("Test: %-45s -> %s\n", "Data integrity of first string", (strcmp(s1, "first") == 0) ? "OK" : "FAIL");
+
+    sea_arena_free(arena);
   }
   puts("\nDone!");
   return (0);
