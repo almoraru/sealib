@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/08/23 15:29:20 by espadara                                #
-#      Updated: 2025/08/30 00:03:17 by espadara                                #
+#      Updated: 2025/08/30 16:38:02 by espadara                                #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -55,7 +55,7 @@ $(NAME):$(OBJ)
 	ranlib $(NAME)
 	@echo "Binary $(NAME) created."
 	@echo "Making test"
-	gcc test.c sealib.a -I includes -lbsd
+	gcc test.c sealib.a -I includes -lbsd -g
 
 $(OBJ_PATH)%.o: $(SRCS_PATH)%.c
 	@echo "Compilation of $(notdir $<)"

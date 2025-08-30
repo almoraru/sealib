@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/30 00:10:34 by espadara                              */
+/*      Updated: 2025/08/30 16:41:23 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -733,7 +733,8 @@ puts("\n---STRCMP---");
     t_mem *arena = NULL;
     char *s1, *s2;
 
-    printf("Test: %-45s -> %s\n", "Arena initialization", (arena = sea_arena_init(64)) != NULL);
+    arena = sea_arena_init(64);
+    printf("Test: %-45s -> %s\n", "Arena initialization", (arena != NULL) ? "OK" : "FAIL");
 
     // Test 1 & 2: Standard duplication and 'used' pointer check
     s1 = sea_arena_strdup(arena, "first");
