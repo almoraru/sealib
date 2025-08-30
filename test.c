@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/30 17:11:22 by espadara                              */
+/*      Updated: 2025/08/30 17:35:28 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -830,6 +830,70 @@ puts("\n---STRCMP---");
     sea_arena_alloc(arena, 64); // Fill the rest of the block
     sea_arena_strsub(arena, "force chain", 0, 5); // This must go in a new block
     printf("Test: %-45s -> %s\n", "Substring forces a new block", (arena->next != NULL) ? "OK" : "FAIL");
+
+    sea_arena_free(arena);
+  }
+  puts("\n---STRJOIN (HEAP)---");
+  {
+    // A structure to hold strjoin test cases
+    struct {
+        const char *s1;
+        const char *s2;
+        const char *expected;
+    } tests[] = {
+        {"Hello, ", "World!", "Hello, World!"},
+        {"First", "", "First"},
+        {"", "Second", "Second"},
+        {"", "", ""},
+        {"A very long string...", "...and another long string.", "A very long string......and another long string."}
+    };
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        char *seal_result = sea_strjoin(tests[i].s1, tests[i].s2);
+
+        int is_ok = (seal_result != NULL && strcmp(seal_result, tests[i].expected) == 0);
+
+        printf("Test: strjoin(\"%s\", \"%s\") -> %s\n",
+               tests[i].s1, tests[i].s2,
+               is_ok ? "OK" : "FAIL");
+
+        free(seal_result); // Important: free the heap-allocated memory
+    }
+
+    // Explicit NULL test
+    char *null_result = sea_strjoin("abc", NULL);
+    printf("Test: strjoin(\"abc\", NULL) -> %s\n", (null_result == NULL) ? "OK" : "FAIL");
+  }
+  puts("\n---ARENA_STRJOIN---");
+  {
+    t_mem *arena = sea_arena_init(64); // Small arena to test chaining
+    char *s1, *s2;
+    size_t used_before, used_after;
+
+    printf("Test: %-45s -> %s\n", "Arena initialization", arena != NULL ? "OK" : "FAIL");
+
+    // Test 1: Standard join & arena usage
+    used_before = arena->used;
+    s1 = sea_arena_strjoin(arena, "Hello, ", "World!");
+    used_after = arena->used;
+    printf("Test: %-45s -> %s\n", "Standard arena join", (strcmp(s1, "Hello, World!") == 0) ? "OK" : "FAIL");
+    size_t expected_size1 = (strlen("Hello, World!") + 1 + ARENA_ALIGN - 1) & ~(ARENA_ALIGN - 1);
+    printf("Test: %-45s -> %s\n", "Arena 'used' pointer correct", (used_after == used_before + expected_size1) ? "OK" : "FAIL");
+
+    // Test 3: Joining with an empty string
+    s2 = sea_arena_strjoin(arena, "Test", "");
+    printf("Test: %-45s -> %s\n", "Joining with an empty string", (strcmp(s2, "Test") == 0) ? "OK" : "FAIL");
+
+    // Test 4: Handle NULL inputs gracefully
+    printf("Test: %-45s -> %s\n", "arena_strjoin(arena, NULL, s2)", (sea_arena_strjoin(arena, NULL, "s2") == NULL) ? "OK" : "FAIL");
+
+    // Test 5: Force chaining
+    sea_arena_strjoin(arena, "fill", "fill"); // Use up space
+    sea_arena_strjoin(arena, "fill", "fill"); // Use up more space
+    sea_arena_strjoin(arena, "force", "chain"); // This should force a new block
+    printf("Test: %-45s -> %s\n", "Join forces a new block", (arena->next != NULL) ? "OK" : "FAIL");
 
     sea_arena_free(arena);
   }
