@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/30 16:41:23 by espadara                              */
+/*      Updated: 2025/08/30 17:11:22 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -769,6 +769,67 @@ puts("\n---STRCMP---");
 
     // Final check that old data is still valid
     printf("Test: %-45s -> %s\n", "Data integrity of first string", (strcmp(s1, "first") == 0) ? "OK" : "FAIL");
+
+    sea_arena_free(arena);
+  }
+  puts("\n---STRSUB (HEAP)---");
+  {
+    // A structure to hold strsub test cases
+    struct {
+        const char *s;
+        unsigned int start;
+        size_t len;
+        const char *expected;
+    } tests[] = {
+        {"Hello World", 6, 5, "World"},          // Standard substring
+        {"Hello World", 6, 10, "World"},         // Length is too long (clamps to end)
+        {"test", 10, 5, ""},                     // Start is out of bounds
+        {"abcdef", 0, 3, "abc"},                 // Extract from the beginning
+        {"abcdef", 2, 1, "c"}                    // Extract a single character
+    };
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        char *seal_result = sea_strsub(tests[i].s, tests[i].start, tests[i].len);
+
+        int is_ok = (seal_result != NULL && strcmp(seal_result, tests[i].expected) == 0);
+
+        printf("Test: strsub(\"%s\", %u, %zu) -> %s\n",
+               tests[i].s, tests[i].start, tests[i].len,
+               is_ok ? "OK" : "FAIL");
+
+        free(seal_result); // Important: free the heap-allocated memory
+    }
+  }
+  puts("\n---ARENA_STRSUB---");
+  {
+    t_mem *arena = sea_arena_init(64); // Small arena to test chaining
+    char *s1, *s2, *s3;
+    size_t used_before, used_after;
+
+    printf("Test: %-45s -> %s\n", "Arena initialization", arena != NULL ? "OK" : "FAIL");
+
+    // Test 1: Standard substring & arena usage
+    used_before = arena->used;
+    s1 = sea_arena_strsub(arena, "Hello World", 6, 5); // "World"
+    used_after = arena->used;
+    printf("Test: %-45s -> %s\n", "Standard arena substring", (strcmp(s1, "World") == 0) ? "OK" : "FAIL");
+    size_t expected_size1 = (strlen("World") + 1 + ARENA_ALIGN - 1) & ~(ARENA_ALIGN - 1);
+    printf("Test: %-45s -> %s\n", "Arena 'used' pointer correct", (used_after == used_before + expected_size1) ? "OK" : "FAIL");
+
+    // Test 3: Length is too long (should be clamped)
+    s2 = sea_arena_strsub(arena, "short", 0, 10);
+    printf("Test: %-45s -> %s\n", "Substring with clamped length", (strcmp(s2, "short") == 0) ? "OK" : "FAIL");
+
+    // Test 4: Start is out of bounds (should be empty)
+    s3 = sea_arena_strsub(arena, "test", 10, 5);
+    printf("Test: %-45s -> %s\n", "Substring with start out of bounds", (strcmp(s3, "") == 0) ? "OK" : "FAIL");
+
+    // Test 5: Force chaining
+    sea_arena_alloc(arena, 64); // Fill the rest of the block
+    sea_arena_strsub(arena, "force chain", 0, 5); // This must go in a new block
+    printf("Test: %-45s -> %s\n", "Substring forces a new block", (arena->next != NULL) ? "OK" : "FAIL");
 
     sea_arena_free(arena);
   }

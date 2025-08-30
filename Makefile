@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/08/23 15:29:20 by espadara                                #
-#      Updated: 2025/08/30 16:38:02 by espadara                                #
+#      Updated: 2025/08/30 17:09:41 by espadara                                #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -39,7 +39,7 @@ SOURCES = sea_isalpha.c sea_isdigit.c sea_isalnum.c sea_isascii.c sea_isprint.c 
 	sea_strcmp.c sea_strnstr.c sea_memchr.c	sea_memcmp.c sea_atoi.c 			\
 	sea_iswhitespace.c sea_atoi_base.c sea_atof.c sea_arena_init.c				\
 	sea_arena_alloc.c sea_arena_free.c sea_memcpy_fast.c sea_strdup.c			\
-
+	sea_strsub.c
 
 SRCS =  $(addprefix $(SRCS_PATH), $(SOURCES))
 
@@ -48,20 +48,21 @@ OBJ_PATH = objs/
 OBJ = $(addprefix $(OBJ_PATH), $(SOURCES:.c=.o))
 
 
-all: $(NAME)
+all: $(NAME) test
 
 $(NAME):$(OBJ)
 	ar rc $(NAME) $(OBJ)
 	ranlib $(NAME)
 	@echo "Binary $(NAME) created."
-	@echo "Making test"
-	gcc test.c sealib.a -I includes -lbsd -g
 
 $(OBJ_PATH)%.o: $(SRCS_PATH)%.c
 	@echo "Compilation of $(notdir $<)"
 	/bin/mkdir -p `dirname $@`
 	gcc -c $(FLAGS) $(INC) $< -o $@
 
+test:
+	@echo "Making test"
+	gcc test.c sealib.a -I includes -lbsd -g
 
 clean:
 	/bin/rm -rf $(OBJ_PATH)
@@ -76,4 +77,4 @@ fclean: clean
 
 re:             fclean all
 
-.PHONY: all, clean, fclean, re
+.PHONY: all, clean, fclean, re test
