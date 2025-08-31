@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/08/30 17:35:28 by espadara                              */
+/*      Updated: 2025/09/01 00:13:51 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -896,6 +896,43 @@ puts("\n---STRCMP---");
     printf("Test: %-45s -> %s\n", "Join forces a new block", (arena->next != NULL) ? "OK" : "FAIL");
 
     sea_arena_free(arena);
+  }
+  puts("\n---STRTRIM---");
+  {
+    // A structure to hold strtrim test cases
+    struct {
+        const char *s1;
+        const char *set;
+        const char *expected;
+    } tests[] = {
+        {"  hello world  ", " ", "hello world"},
+        {"..!!hello world!!..", ".!", "hello world"},
+        {"hello world", "xy", "hello world"},
+        {"a hello world a", " ", "a hello world a"},
+        {"ababab", "ab", ""},
+        {"   hello world", " ", "hello world"},
+        {"hello world   ", " ", "hello world"},
+        {"", "ab", ""},
+        {"  hello  ", "", "  hello  "}
+    };
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        char *seal_result = sea_strtrim(tests[i].s1, tests[i].set);
+
+        int is_ok = (seal_result != NULL && strcmp(seal_result, tests[i].expected) == 0);
+
+        printf("Test: strtrim(\"%s\", \"%s\") -> %s\n",
+               tests[i].s1, tests[i].set,
+               is_ok ? "OK" : "FAIL");
+
+        free(seal_result); // Important: free the heap-allocated memory
+    }
+
+    // Explicit NULL test
+    char *null_result = sea_strtrim(NULL, "abc");
+    printf("Test: strtrim(NULL, \"abc\") -> %s\n", (null_result == NULL) ? "OK" : "FAIL");
   }
   puts("\nDone!");
   return (0);
