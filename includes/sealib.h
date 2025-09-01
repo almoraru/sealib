@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/09/01 22:35:00 by espadara                              */
+/*      Updated: 2025/09/01 22:55:01 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ typedef struct	s_mem
   size_t used;
   unsigned char *mem;
 }				t_mem;
+
 /* FUNCTIONS */
 
 /* BOOLEANS  */
@@ -68,6 +69,10 @@ int	sea_isascii(int c);
 int	sea_isprint(int c);
 int	sea_iswhitespace(char c);
 
+/* CHARACTERS */
+int	sea_toupper(int c);
+int	sea_tolower(int c);
+
 /* STRINGS */
 size_t	sea_strlen(const char *s);
 char	*sea_strcpy(char *dest, const char *src);
@@ -75,8 +80,6 @@ char	*sea_strncpy(char *dest, const char *src, size_t dsize);
 size_t	sea_strlcpy(char *dst, const char *src, size_t size);
 size_t	sea_strlcat(char *dst, const char *src, size_t size);
 void	*sea_bzero(void *s, size_t n);
-int	sea_toupper(int c);
-int	sea_tolower(int c);
 char	*sea_strchr(const char *s, int c);
 char	*sea_strrchr(const char *s, int c);
 char	*sea_strstr(const char *haystack, const char *needle);
@@ -93,6 +96,9 @@ char	*sea_strtrim(char const *s1, char const *set);
 char	**sea_split(char const *s, char c);
 char	**sea_arena_split(t_mem *arena, char const *s, char c);
 char	*sea_itoa(int n);
+char	*sea_strmapi(char const *s, char (*f)(unsigned int, char));
+void	sea_striteri(char *s, void (*f)(unsigned int, char *));
+
 
 
 /* MEMORY */

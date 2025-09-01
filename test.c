@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/01 22:35:07 by espadara                              */
+/*      Updated: 2025/09/01 22:54:44 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1065,6 +1065,117 @@ puts("\n---STRCMP---");
 
         free(seal_result); // Important: free the heap-allocated memory
     }
+  }
+  puts("\n---STRMAPI---");
+  {
+    // --- Helper functions to use for testing ---
+
+    // A simple function that converts a character to uppercase
+    char map_toupper_func(unsigned int i, char c) {
+        (void)i; // Unused parameter
+        return (sea_toupper(c));
+    }
+
+    // A function that adds the index to the character's ASCII value
+    char map_add_index_func(unsigned int i, char c) {
+        return (c + i);
+    }
+
+    // A function that returns the character unchanged
+    char map_identity_func(unsigned int i, char c) {
+        (void)i; // Unused parameter
+        return (c);
+    }
+
+    // A structure to hold the main test cases
+    struct {
+        const char *s;
+        char (*f)(unsigned int, char);
+        const char *expected;
+        const char *description;
+    } tests[] = {
+        {"hello", map_toupper_func, "HELLO", "Lowercase to Uppercase"},
+        {"WoRlD", map_toupper_func, "WORLD", "Mixedcase to Uppercase"},
+        {"123!@#", map_toupper_func, "123!@#", "Non-alpha with toupper"},
+        {"", map_toupper_func, "", "Empty string"},
+        {"abc", map_add_index_func, "ace", "Add index to char"},
+        {"", map_add_index_func, "", "Empty string with add_index"},
+        {"NoChange", map_identity_func, "NoChange", "Identity function (no change)"},
+    };
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        char *seal_result = sea_strmapi(tests[i].s, tests[i].f);
+
+        int is_ok = (seal_result != NULL && strcmp(seal_result, tests[i].expected) == 0);
+
+        printf("Test: %-28s -> %s\n",
+               tests[i].description,
+               is_ok ? "OK" : "FAIL");
+
+        free(seal_result); // Important: free the heap-allocated memory
+    }
+
+    // --- Explicit NULL edge case tests ---
+
+    // Test 8: NULL string input
+    char *null_s_result = sea_strmapi(NULL, map_toupper_func);
+    printf("Test: %-28s -> %s\n", "NULL string input", (null_s_result == NULL) ? "OK" : "FAIL");
+
+    // Test 9: NULL function input
+    char *null_f_result = sea_strmapi("hello", NULL);
+    printf("Test: %-28s -> %s\n", "NULL function input", (null_f_result == NULL) ? "OK" : "FAIL");
+
+    // Test 10: Both inputs are NULL
+    char *null_both_result = sea_strmapi(NULL, NULL);
+    printf("Test: %-28s -> %s\n", "Both inputs are NULL", (null_both_result == NULL) ? "OK" : "FAIL");
+  }
+  puts("\n---STRITERI---");
+  {
+    // --- Helper functions to use for testing ---
+    void map_to_upper(unsigned int i, char *c) {
+        (void)i;
+        if (*c >= 'a' && *c <= 'z') *c -= 32;
+    }
+    void map_add_index(unsigned int i, char *c) {
+        *c = *c + i;
+    }
+    void map_to_x(unsigned int i, char *c) {
+        (void)i;
+        *c = 'x';
+    }
+
+    // --- Test Cases ---
+
+    // Test 1: To Uppercase
+    char s1[] = "Hello World";
+    char expected1[] = "HELLO WORLD";
+    sea_striteri(s1, map_to_upper);
+    printf("Test: To Uppercase -> %s\n", (strcmp(s1, expected1) == 0) ? "OK" : "FAIL");
+
+    // Test 2: Add Index
+    char s2[] = "abcde";
+    char expected2[] = "acegi"; // 'a'+0, 'b'+1, 'c'+2, 'd'+3, 'e'+4
+    sea_striteri(s2, map_add_index);
+    printf("Test: Add Index -> %s\n", (strcmp(s2, expected2) == 0) ? "OK" : "FAIL");
+
+    // Test 3: Change all chars to 'x'
+    char s3[] = "12345";
+    char expected3[] = "xxxxx";
+    sea_striteri(s3, map_to_x);
+    printf("Test: Change to 'x' -> %s\n", (strcmp(s3, expected3) == 0) ? "OK" : "FAIL");
+
+    // Test 4: Empty string (should not crash)
+    char s4[] = "";
+    char expected4[] = "";
+    sea_striteri(s4, map_to_upper);
+    printf("Test: Empty string -> %s\n", (strcmp(s4, expected4) == 0) ? "OK" : "FAIL");
+
+    // Test 5: NULL inputs (should not crash)
+    sea_striteri(NULL, map_to_upper);
+    sea_striteri(s1, NULL);
+    printf("Test: NULL inputs -> OK\n");
   }
   puts("\nDone!");
   return (0);
