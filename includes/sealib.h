@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/09/01 22:55:01 by espadara                              */
+/*      Updated: 2025/09/01 23:04:04 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@
 # include <math.h>
 # include <immintrin.h>
 # include <limits.h>
+# include <fcntl.h>
+
 
 /* DEFINES  */
 
@@ -99,8 +101,6 @@ char	*sea_itoa(int n);
 char	*sea_strmapi(char const *s, char (*f)(unsigned int, char));
 void	sea_striteri(char *s, void (*f)(unsigned int, char *));
 
-
-
 /* MEMORY */
 void	*sea_memset(void *s, int c, size_t n);
 void	*sea_memcpy(void *dest, const void *src, size_t n);
@@ -116,4 +116,11 @@ void	*sea_memcpy_fast(void *dest, const void *src, size_t n);
 int	sea_atoi(const char *nptr);
 int	sea_atoi_base(const char *str, int base);
 double	sea_atof(const char *str);
+
+/* INPUT - OUTPUT  */
+void	sea_putchar_fd(char c, int fd);
+void	sea_putstr_fd(char const *s, int fd);
+void	sea_putendl_fd(char *s, int fd);
+void	sea_putnbr_fd(int n, int fd);
+
 #endif

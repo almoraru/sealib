@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/01 22:54:44 by espadara                              */
+/*      Updated: 2025/09/01 23:04:15 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1177,6 +1177,87 @@ puts("\n---STRCMP---");
     sea_striteri(s1, NULL);
     printf("Test: NULL inputs -> OK\n");
   }
+  puts("\n---FD WRITER FUNCTIONS---");
+  {
+    #define TEST_FILE "test_output.tmp"
+    int fd;
+    char buffer[128];
+    ssize_t bytes_read;
+
+    // --- Test 1: sea_putchar_fd ---
+    fd = open(TEST_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd != -1) {
+        sea_putchar_fd('C', fd);
+        close(fd);
+        fd = open(TEST_FILE, O_RDONLY);
+        bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+        buffer[bytes_read] = '\0';
+        close(fd);
+        printf("Test: putchar_fd('C') -> %s\n", (strcmp(buffer, "C") == 0) ? "OK" : "FAIL");
+    }
+
+    // --- Test 2: sea_putstr_fd ---
+    fd = open(TEST_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd != -1) {
+        sea_putstr_fd("Hello World", fd);
+        close(fd);
+        fd = open(TEST_FILE, O_RDONLY);
+        bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+        buffer[bytes_read] = '\0';
+        close(fd);
+        printf("Test: putstr_fd(\"Hello World\") -> %s\n", (strcmp(buffer, "Hello World") == 0) ? "OK" : "FAIL");
+    }
+
+    // --- Test 3: sea_putendl_fd ---
+    fd = open(TEST_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd != -1) {
+        sea_putendl_fd("Line with newline", fd);
+        close(fd);
+        fd = open(TEST_FILE, O_RDONLY);
+        bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+        buffer[bytes_read] = '\0';
+        close(fd);
+        printf("Test: putendl_fd(\"...\") -> %s\n", (strcmp(buffer, "Line with newline\n") == 0) ? "OK" : "FAIL");
+    }
+
+    // --- Test 4: sea_putnbr_fd (Positive) ---
+    fd = open(TEST_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd != -1) {
+        sea_putnbr_fd(12345, fd);
+        close(fd);
+        fd = open(TEST_FILE, O_RDONLY);
+        bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+        buffer[bytes_read] = '\0';
+        close(fd);
+        printf("Test: putnbr_fd(12345) -> %s\n", (strcmp(buffer, "12345") == 0) ? "OK" : "FAIL");
+    }
+
+    // --- Test 5: sea_putnbr_fd (Negative) ---
+    fd = open(TEST_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd != -1) {
+        sea_putnbr_fd(-6789, fd);
+        close(fd);
+        fd = open(TEST_FILE, O_RDONLY);
+        bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+        buffer[bytes_read] = '\0';
+        close(fd);
+        printf("Test: putnbr_fd(-6789) -> %s\n", (strcmp(buffer, "-6789") == 0) ? "OK" : "FAIL");
+    }
+
+    // --- Test 6: sea_putnbr_fd (INT_MIN) ---
+    fd = open(TEST_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd != -1) {
+        sea_putnbr_fd(-2147483648, fd);
+        close(fd);
+        fd = open(TEST_FILE, O_RDONLY);
+        bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+        buffer[bytes_read] = '\0';
+        close(fd);
+        printf("Test: putnbr_fd(INT_MIN) -> %s\n", (strcmp(buffer, "-2147483648") == 0) ? "OK" : "FAIL");
+    }
+
+    unlink(TEST_FILE); // Clean up and delete the temporary file
+ }
   puts("\nDone!");
   return (0);
 }
