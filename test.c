@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/01 00:13:51 by espadara                              */
+/*      Updated: 2025/09/01 22:35:07 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -933,6 +933,138 @@ puts("\n---STRCMP---");
     // Explicit NULL test
     char *null_result = sea_strtrim(NULL, "abc");
     printf("Test: strtrim(NULL, \"abc\") -> %s\n", (null_result == NULL) ? "OK" : "FAIL");
+  }
+  puts("\n---SPLIT (HEAP)---");
+  {
+    // Helper function to compare two string arrays
+    int are_splits_equal(char **result, const char **expected) {
+        int i = 0;
+        while (expected[i]) {
+            if (result[i] == NULL || strcmp(result[i], expected[i]) != 0)
+                return 0; // Mismatch or result array is shorter
+            i++;
+        }
+        if (result[i] != NULL)
+            return 0; // Result array is longer
+        return 1; // Match
+    }
+
+    // Helper function to free the memory from a split
+    void free_split(char **split_array) {
+        if (!split_array) return;
+        for (int i = 0; split_array[i]; i++) {
+            free(split_array[i]);
+        }
+        free(split_array);
+    }
+
+    // A structure to hold split test cases
+    struct {
+        const char *s;
+        char c;
+        const char *expected[10]; // Max 9 words + NULL
+    } tests[] = {
+        {"hello world from C", ' ', {"hello", "world", "from", "C", NULL}},
+        {"  split   this  ", ' ', {"split", "this", NULL}},
+        {"oneword", ',', {"oneword", NULL}},
+        {"", ' ', {NULL}},
+        {",,,", ',', {NULL}},
+    };
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        char **seal_result = sea_split(tests[i].s, tests[i].c);
+
+        int is_ok = (seal_result != NULL && are_splits_equal(seal_result, tests[i].expected));
+
+        printf("Test: split(\"%s\", '%c') -> %s\n",
+               tests[i].s, tests[i].c, is_ok ? "OK" : "FAIL");
+
+        free_split(seal_result); // Important: free all allocated memory
+    }
+  }
+  puts("\n---ARENA_SPLIT---");
+  {
+    // Helper function to compare two string arrays
+    int are_splits_equal(char **result, const char **expected) {
+        int i = 0;
+        while (expected[i]) {
+            if (result[i] == NULL || strcmp(result[i], expected[i]) != 0)
+                return 0;
+            i++;
+        }
+        if (result[i] != NULL)
+            return 0;
+        return 1;
+    }
+
+    t_mem *arena = sea_arena_init(100); // Small arena for testing
+    printf("Test: %-45s -> %s\n", "Arena initialization", arena != NULL ? "OK" : "FAIL");
+
+    // Test 1: Standard split
+    const char *s1 = "A simple test";
+    const char *expected1[] = {"A", "simple", "test", NULL};
+    char **res1 = sea_arena_split(arena, s1, ' ');
+    printf("Test: %-45s -> %s\n", "Standard arena split", are_splits_equal(res1, expected1) ? "OK" : "FAIL");
+
+    // Test 2: Split with multiple delimiters
+    const char *s2 = "leading,,,and,,trailing";
+    const char *expected2[] = {"leading", "and", "trailing", NULL};
+    char **res2 = sea_arena_split(arena, s2, ',');
+    printf("Test: %-45s -> %s\n", "Multiple delimiters", are_splits_equal(res2, expected2) ? "OK" : "FAIL");
+
+    // Test 3: Empty string
+    const char *s3 = "";
+    const char *expected3[] = {NULL};
+    char **res3 = sea_arena_split(arena, s3, ' ');
+    printf("Test: %-45s -> %s\n", "Empty string input", are_splits_equal(res3, expected3) ? "OK" : "FAIL");
+
+    // Test 4: No delimiters
+    const char *s4 = "onelongword";
+    const char *expected4[] = {"onelongword", NULL};
+    char **res4 = sea_arena_split(arena, s4, ' ');
+    printf("Test: %-45s -> %s\n", "No delimiters", are_splits_equal(res4, expected4) ? "OK" : "FAIL");
+
+    // Test 5: Force chaining
+    // The first block is 100 bytes. The tests above used some space.
+    // This split will require more space than is left, forcing a new block.
+    const char *s5 = "this final split is a bit longer and should force a new block";
+    sea_arena_split(arena, s5, ' ');
+    printf("Test: %-45s -> %s\n", "Split forces a new block", (arena->next != NULL) ? "OK" : "FAIL");
+
+    sea_arena_free(arena);
+  }
+  puts("\n---ITOA---");
+  {
+    // A structure to hold itoa test cases
+    struct {
+        int n;
+    } tests[] = {
+        {12345},
+        {-6789},
+        {0},
+        {2147483647},   // INT_MAX
+        {-2147483648}   // INT_MIN
+    };
+    int num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < num_tests; i++)
+    {
+        // Use sprintf to generate the official, correct string
+        char expected[12]; // Buffer large enough for any 32-bit int
+        sprintf(expected, "%d", tests[i].n);
+
+        char *seal_result = sea_itoa(tests[i].n);
+
+        int is_ok = (seal_result != NULL && strcmp(seal_result, expected) == 0);
+
+        printf("Test: itoa(%d) | Expected: \"%s\", SEAL: \"%s\" -> %s\n",
+               tests[i].n, expected, seal_result,
+               is_ok ? "OK" : "FAIL");
+
+        free(seal_result); // Important: free the heap-allocated memory
+    }
   }
   puts("\nDone!");
   return (0);

@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/09/01 00:11:24 by espadara                              */
+/*      Updated: 2025/09/01 22:35:00 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 # include <bsd/string.h>
 # include <math.h>
 # include <immintrin.h>
+# include <limits.h>
 
 /* DEFINES  */
 
@@ -89,6 +90,9 @@ char	*sea_arena_strsub(t_mem *arena, char const *s, unsigned int start, size_t l
 char	*sea_strjoin(char const *s1, char const *s2);
 char	*sea_arena_strjoin(t_mem *arena, char const *s1, char const *s2);
 char	*sea_strtrim(char const *s1, char const *set);
+char	**sea_split(char const *s, char c);
+char	**sea_arena_split(t_mem *arena, char const *s, char c);
+char	*sea_itoa(int n);
 
 
 /* MEMORY */
