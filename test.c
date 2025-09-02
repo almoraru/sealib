@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/01 23:04:15 by espadara                              */
+/*      Updated: 2025/09/02 23:40:47 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1257,7 +1257,78 @@ puts("\n---STRCMP---");
     }
 
     unlink(TEST_FILE); // Clean up and delete the temporary file
- }
+  }
+  puts("\n---LSTNEW (HEAP)---");
+  {
+    t_list *node1, *node2;
+    int content1 = 42;
+    char *content2 = "hello";
+
+    // Test 1: Create a basic node with content
+    node1 = sea_lstnew(&content1);
+    PRINT_TEST("Create a node with int content",
+               node1 != NULL && node1->content == &content1 && node1->next == NULL);
+
+    // Test 2: Create a node with NULL content
+    node2 = sea_lstnew(NULL);
+    PRINT_TEST("Create a node with NULL content",
+               node2 != NULL && node2->content == NULL && node2->next == NULL);
+    free(node2); // Clean up
+
+    // Test 3: Linking two nodes
+    node2 = sea_lstnew(content2);
+    node1->next = node2;
+    PRINT_TEST("Linking two nodes together",
+               node1->next == node2 && strcmp(node1->next->content, "hello") == 0);
+
+    // Test 4: Content integrity (content is not copied)
+    content1 = 99; // Modify the original content
+    PRINT_TEST("Content is a shallow copy (pointer)",
+               *(int*)node1->content == 99);
+
+    // Test 5: Memory independence
+    free(node1);
+    free(node2);
+    PRINT_TEST("Nodes can be freed individually",
+               strcmp(content2, "hello") == 0); // Original content is untouched
+  }
+  puts("\n---ARENA_LSTNEW---");
+  {
+    t_mem *arena = sea_arena_init(sizeof(t_list) * 2); // Arena with space for exactly 2 nodes
+    t_list *node1, *node2, *node3;
+    int content1 = 42;
+    size_t used_before, used_after;
+    size_t aligned_node_size = (sizeof(t_list) + ARENA_ALIGN - 1) & ~(ARENA_ALIGN - 1);
+
+    PRINT_TEST("Arena initialization", arena != NULL);
+
+    // Test 1: Create a basic node in the arena
+    used_before = arena->used;
+    node1 = sea_arena_lstnew(arena, &content1);
+    used_after = arena->used;
+    PRINT_TEST("Create a node in the arena",
+               node1 != NULL && *(int*)node1->content == 42);
+
+    // Test 2: Arena 'used' pointer advanced correctly
+    PRINT_TEST("Arena 'used' pointer advanced correctly",
+               used_after == used_before + aligned_node_size);
+
+    // Test 3: Creating a second node
+    node2 = sea_arena_lstnew(arena, NULL);
+    PRINT_TEST("Create a second node with NULL content",
+               node2 != NULL && node2->content == NULL);
+
+    // Test 4: Check if nodes are contiguous in memory
+    PRINT_TEST("Nodes are contiguous in arena memory",
+               (unsigned char*)node2 == (unsigned char*)node1 + aligned_node_size);
+
+    // Test 5: Force chaining by allocating a third node
+    node3 = sea_arena_lstnew(arena, "force chain");
+    PRINT_TEST("Allocation forces a new block",
+               arena->next != NULL && node3 != NULL);
+
+    //sea_arena_free(arena);
+  }
   puts("\nDone!");
   return (0);
 }
