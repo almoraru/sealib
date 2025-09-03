@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/09/02 23:35:27 by espadara                              */
+/*      Updated: 2025/09/03 08:14:46 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@
 typedef struct	s_list
 {
   void *content;
-  size_t size;
   struct s_list *next;
 }				t_list;
 

@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/02 23:40:47 by espadara                              */
+/*      Updated: 2025/09/03 08:14:57 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1327,7 +1327,7 @@ puts("\n---STRCMP---");
     PRINT_TEST("Allocation forces a new block",
                arena->next != NULL && node3 != NULL);
 
-    //sea_arena_free(arena);
+    sea_arena_free(arena);
   }
   puts("\nDone!");
   return (0);
