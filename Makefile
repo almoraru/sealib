@@ -18,7 +18,7 @@
 #      Filename: Makefile                                                      #
 #      By: espadara <espadara@pirate.capn.gg>                                  #
 #      Created: 2025/08/23 15:29:20 by espadara                                #
-#      Updated: 2025/09/03 13:56:52 by espadara                                #
+#      Updated: 2025/09/03 22:31:59 by espadara                                #
 #                                                                              #
 # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; #
 
@@ -65,7 +65,7 @@ $(OBJ_PATH)%.o: $(SRCS_PATH)%.c
 
 test:
 	@echo "Making test"
-	gcc test.c sealib.a -I includes -lbsd -fsanitize=address
+	gcc test.c sealib.a -I includes -lbsd
 
 clean:
 	/bin/rm -rf $(OBJ_PATH)

@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/03 13:58:35 by espadara                              */
+/*      Updated: 2025/09/03 22:31:45 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,36 @@
 
 #define PRINT_TEST(description, condition)                              \
     printf("  Test: %-50s -> %s\n", description, (condition) ? "OK" : "FAIL")
+
+/* HELPER FUNCTIONS */
+    // A simple function that converts a character to uppercase
+    char map_toupper_func(unsigned int i, char c) {
+        (void)i; // Unused parameter
+        return (sea_toupper(c));
+    }
+
+    // A function that adds the index to the character's ASCII value
+    char map_add_index_func(unsigned int i, char c) {
+        return (c + i);
+    }
+
+    // A function that returns the character unchanged
+    char map_identity_func(unsigned int i, char c) {
+        (void)i; // Unused parameter
+        return (c);
+    }
+    // --- Helper functions to use for testing ---
+    void map_to_upper(unsigned int i, char *c) {
+        (void)i;
+        if (*c >= 'a' && *c <= 'z') *c -= 32;
+    }
+    void map_add_index(unsigned int i, char *c) {
+        *c = *c + i;
+    }
+    void map_to_x(unsigned int i, char *c) {
+        (void)i;
+        *c = 'x';
+    }
 
 /* TEST STRUCTS */
 struct TestCase {
@@ -1070,24 +1100,7 @@ puts("\n---STRCMP---");
   }
   puts("\n---STRMAPI---");
   {
-    // --- Helper functions to use for testing ---
 
-    // A simple function that converts a character to uppercase
-    char map_toupper_func(unsigned int i, char c) {
-        (void)i; // Unused parameter
-        return (sea_toupper(c));
-    }
-
-    // A function that adds the index to the character's ASCII value
-    char map_add_index_func(unsigned int i, char c) {
-        return (c + i);
-    }
-
-    // A function that returns the character unchanged
-    char map_identity_func(unsigned int i, char c) {
-        (void)i; // Unused parameter
-        return (c);
-    }
 
     // A structure to hold the main test cases
     struct {
@@ -1135,19 +1148,6 @@ puts("\n---STRCMP---");
   }
   puts("\n---STRITERI---");
   {
-    // --- Helper functions to use for testing ---
-    void map_to_upper(unsigned int i, char *c) {
-        (void)i;
-        if (*c >= 'a' && *c <= 'z') *c -= 32;
-    }
-    void map_add_index(unsigned int i, char *c) {
-        *c = *c + i;
-    }
-    void map_to_x(unsigned int i, char *c) {
-        (void)i;
-        *c = 'x';
-    }
-
     // --- Test Cases ---
 
     // Test 1: To Uppercase
@@ -1428,7 +1428,7 @@ puts("\n---STRCMP---");
     PRINT_TEST("Size from the 99th node is 2", sea_lstsize(head->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next) == 2);
     PRINT_TEST("Sanity check size is still 100", sea_lstsize(head) == 100);
 
-    free(head);//free_test_list(head); // Clean up the second list
+   free_test_list(head); // Clean up the second list
   }
 
   puts("\nDone!");

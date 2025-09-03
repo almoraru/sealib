@@ -18,7 +18,7 @@
 /*      Filename: sea_split.c                                                 */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/09/01 21:58:43 by espadara                              */
-/*      Updated: 2025/09/01 22:19:35 by espadara                              */
+/*      Updated: 2025/09/03 22:14:23 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static size_t	count_words(char const *s, char c)
           in_word = 1;
           count++;
           }
-      else if (*s == 0)
+      else if (*s == c)
         in_word = 0;
       s++;
     }
