@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/03 13:43:17 by espadara                              */
+/*      Updated: 2025/09/03 13:55:26 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1426,7 +1426,7 @@ puts("\n---STRCMP---");
     PRINT_TEST("Size from the 99th node is 2", sea_lstsize(head->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next) == 2);
     PRINT_TEST("Sanity check size is still 100", sea_lstsize(head) == 100);
 
-//    free_test_list(head); // Clean up the second list
+    free(head);//free_test_list(head); // Clean up the second list
   }
 
   puts("\nDone!");
