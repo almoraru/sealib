@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/03 11:05:57 by espadara                              */
+/*      Updated: 2025/09/03 13:43:17 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1368,6 +1368,65 @@ puts("\n---STRCMP---");
       free(node_c);
       free(node_b);
       free(node_a);
+  }
+  puts("\n---LSTSIZE---");
+  {
+    // Helper function to add a new node to the front of a list
+    void lst_add_front(t_list **lst, t_list *new_node) {
+        if (lst && new_node) {
+            new_node->next = *lst;
+            *lst = new_node;
+        }
+    }
+
+    // Helper function to free the test list
+    void free_test_list(t_list *head) {
+        t_list *tmp;
+        while (head) {
+            tmp = head->next;
+            free(head);
+            head = tmp;
+        }
+    }
+
+    t_list *head = NULL;
+    int content = 42;
+
+    // Test 1: Test with a NULL list
+    PRINT_TEST("Size of a NULL list is 0", sea_lstsize(head) == 0);
+
+    // Test 2: Test a list with one node
+    lst_add_front(&head, sea_lstnew(&content));
+    PRINT_TEST("Size of a 1-node list is 1", sea_lstsize(head) == 1);
+
+    // Test 3: Test a list with two nodes
+    lst_add_front(&head, sea_lstnew(&content));
+    PRINT_TEST("Size of a 2-node list is 2", sea_lstsize(head) == 2);
+
+    // Test 4: Test a list with three nodes
+    lst_add_front(&head, sea_lstnew(&content));
+    PRINT_TEST("Size of a 3-node list is 3", sea_lstsize(head) == 3);
+
+    // Test 5: Test size from the middle of the list
+    PRINT_TEST("Size from the 2nd node is 2", sea_lstsize(head->next) == 2);
+
+    // Test 6: Test size from the last node of the list
+    PRINT_TEST("Size from the last node is 1", sea_lstsize(head->next->next) == 1);
+
+    free_test_list(head); // Clean up the first list
+    head = NULL;
+
+    // Test 7-10: Test with a longer, programmatically generated list
+    int list_len = 100;
+    for (int i = 0; i < list_len; i++) {
+        lst_add_front(&head, sea_lstnew(&content));
+    }
+    PRINT_TEST("Size of a 100-node list is 100", sea_lstsize(head) == 100);
+    PRINT_TEST("Size from the 50th node is 51", sea_lstsize(head->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next) == 51); // A bit silly but demonstrates the point
+    PRINT_TEST("Size from the 99th node is 2", sea_lstsize(head->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next->next) == 2);
+    PRINT_TEST("Sanity check size is still 100", sea_lstsize(head) == 100);
+
+//    free_test_list(head); // Clean up the second list
   }
 
   puts("\nDone!");

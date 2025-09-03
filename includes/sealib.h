@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/09/03 11:03:48 by espadara                              */
+/*      Updated: 2025/09/03 13:37:31 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,4 +126,5 @@ void	sea_putnbr_fd(int n, int fd);
 t_list	*sea_lstnew(void *content);
 t_list	*sea_arena_lstnew(t_mem *arena, void *content);
 void	sea_lstadd_front(t_list **lst, t_list *new);
+int	sea_lstsize(t_list *lst);
 #endif

@@ -15,38 +15,23 @@
 /*       > _.="                            "=._ <                             */
 /*      (_/                                    \_)                            */
 /*                                                                            */
-/*      Filename: sea_lstnew.c                                                */
+/*      Filename: sea_lstsize.c                                               */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
-/*      Created: 2025/09/02 22:34:34 by espadara                              */
-/*      Updated: 2025/09/03 13:41:08 by espadara                              */
+/*      Created: 2025/09/03 13:35:21 by espadara                              */
+/*      Updated: 2025/09/03 13:37:28 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sealib.h"
 
-t_list	*sea_lstnew(void *content)
+int	sea_lstsize(t_list *lst)
 {
-  t_list *new_node = NULL;
+  int count = 0;
 
-  new_node = malloc(sizeof(t_list));
-  if (!new_node)
-    return (NULL);
-  new_node->content = content;
-  new_node->next = NULL;
-
- return (new_node);
-}
-
-t_list	*sea_arena_lstnew(t_mem *arena, void *content)
-{
-  t_list *new_node = NULL;
-
-  if (!arena)
-    return (NULL);
-  new_node = sea_arena_alloc(arena, sizeof(t_list));
-  if (!new_node)
-    return (NULL);
-  new_node->content = content;
-  new_node->next = NULL;
-  return (new_node);
+  while (lst)
+    {
+      count++;
+      lst = lst->next;
+    }
+  return (count);
 }
