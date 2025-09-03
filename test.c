@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/03 13:55:26 by espadara                              */
+/*      Updated: 2025/09/03 13:58:35 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -644,7 +644,6 @@ puts("\n---STRCMP---");
 
   puts("\n---MEMCPY_FAST---");
   {
-    // A structure to hold memcpy test cases
     struct {
         size_t n;
         const char *description;
@@ -661,14 +660,17 @@ puts("\n---STRCMP---");
         {25, "Full buffer copy"}
     };
 
-    const char *source_data = "This is the source string\0with nulls inside.";
+    // Create a large, safe source buffer for all tests
+    char source_data[200];
+    memset(source_data, 'A', sizeof(source_data)); // Fill with 'A's
+    strcpy(source_data + 20, "null\0test"); // Add some unique data
+
     int num_tests = sizeof(tests) / sizeof(tests[0]);
 
     for (int i = 0; i < num_tests; i++)
     {
-        // Allocate and prepare fresh buffers for each test
-        char real_dest[128] = {0};
-        char seal_dest[128] = {0};
+        char real_dest[200] = {0};
+        char seal_dest[200] = {0};
 
         memcpy(real_dest, source_data, tests[i].n);
         sea_memcpy_fast(seal_dest, source_data, tests[i].n);
