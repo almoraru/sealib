@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/03 08:14:57 by espadara                              */
+/*      Updated: 2025/09/03 11:05:57 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1329,6 +1329,47 @@ puts("\n---STRCMP---");
 
     sea_arena_free(arena);
   }
+  puts("\n---LSTADD_FRONT---");
+  {
+      // Test 1: Add to an empty list
+      t_list *list1 = NULL;
+      t_list *new_node1 = sea_lstnew("first node");
+      sea_lstadd_front(&list1, new_node1);
+      int is_ok1 = (list1 == new_node1 && list1->next == NULL);
+      printf("Test: Add node to an empty list -> %s\n", is_ok1 ? "OK" : "FAIL");
+      free(new_node1);
+      // Test 2: Add to a non-empty list
+      t_list *list2 = sea_lstnew("original head");
+      t_list *new_node2 = sea_lstnew("new head");
+      t_list *original_head = list2;
+      sea_lstadd_front(&list2, new_node2);
+      int is_ok2 = (list2 == new_node2 && list2->next == original_head);
+      printf("Test: Add node to a non-empty list -> %s\n", is_ok2 ? "OK" : "FAIL");
+      free(new_node2);
+      free(original_head);
+      // Test 3: Add a NULL new node
+      t_list *list3 = sea_lstnew("original head");
+      t_list *new_node3 = NULL;
+      t_list *list3_original_head = list3;
+      sea_lstadd_front(&list3, new_node3);
+      int is_ok3 = (list3 == list3_original_head && list3->next == NULL);
+      printf("Test: Add a NULL new node -> %s\n", is_ok3 ? "OK" : "FAIL");
+      free(list3);
+      // Test 4: Multiple additions
+      t_list *list4 = NULL;
+      t_list *node_a = sea_lstnew("A");
+      t_list *node_b = sea_lstnew("B");
+      t_list *node_c = sea_lstnew("C");
+      sea_lstadd_front(&list4, node_a);
+      sea_lstadd_front(&list4, node_b);
+      sea_lstadd_front(&list4, node_c);
+      int is_ok4 = (list4 == node_c && list4->next == node_b && list4->next->next == node_a && list4->next->next->next == NULL);
+      printf("Test: Multiple additions (C, B, A) -> %s\n", is_ok4 ? "OK" : "FAIL");
+      free(node_c);
+      free(node_b);
+      free(node_a);
+  }
+
   puts("\nDone!");
   return (0);
 }
