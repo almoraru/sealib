@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/03 22:31:45 by espadara                              */
+/*      Updated: 2025/09/04 23:06:01 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,43 @@
         (void)i;
         *c = 'x';
     }
+    // Helper function to add a new node to the front of a list
+    void lst_add_front(t_list **lst, t_list *new_node) {
+        if (lst && new_node) {
+            new_node->next = *lst;
+            *lst = new_node;
+        }
+    }
+
+    // Helper function to free the test list
+    void free_test_list(t_list *head) {
+        t_list *tmp;
+        while (head) {
+            tmp = head->next;
+            free(head);
+            head = tmp;
+        }
+    }
+    // A global flag to check if our test deletion function was called.
+    static int g_del_called_flag = 0;
+
+    // A custom deletion function for testing purposes.
+    void test_del_func(void *data)
+    {
+        if (data)
+            free(data);
+        g_del_called_flag = 1; // Set the flag to prove this function ran.
+    }
+static void noop_del(void *data)
+{
+    (void)data; // This just tells the compiler we know the parameter is unused.
+}
+
+static int g_del_counter = 0;
+void test_del_counter(void *data) {
+    free(data);
+    g_del_counter++;
+}
 
 /* TEST STRUCTS */
 struct TestCase {
@@ -1373,23 +1410,6 @@ puts("\n---STRCMP---");
   }
   puts("\n---LSTSIZE---");
   {
-    // Helper function to add a new node to the front of a list
-    void lst_add_front(t_list **lst, t_list *new_node) {
-        if (lst && new_node) {
-            new_node->next = *lst;
-            *lst = new_node;
-        }
-    }
-
-    // Helper function to free the test list
-    void free_test_list(t_list *head) {
-        t_list *tmp;
-        while (head) {
-            tmp = head->next;
-            free(head);
-            head = tmp;
-        }
-    }
 
     t_list *head = NULL;
     int content = 42;
@@ -1430,7 +1450,129 @@ puts("\n---STRCMP---");
 
    free_test_list(head); // Clean up the second list
   }
+  puts("\n---LSTLAST---");
+  {
+    t_list *head = NULL;
+    t_list *last_node = NULL;
 
+    // Test 1: Test with a NULL list
+    PRINT_TEST("Last node of a NULL list is NULL", sea_lstlast(head) == NULL);
+
+    // --- Heap-Allocated List Tests ---
+    t_list *heap_node_a = sea_lstnew("A");
+    t_list *heap_node_b = sea_lstnew("B");
+    t_list *heap_node_c = sea_lstnew("C");
+
+    // Test 2: Test a single-node list
+    head = heap_node_a;
+    last_node = sea_lstlast(head);
+    PRINT_TEST("Last node of a 1-node list is the head", last_node == heap_node_a);
+
+    // Test 3 & 4: Test a multi-node list
+    head->next = heap_node_b;
+    head->next->next = heap_node_c;
+    last_node = sea_lstlast(head);
+    PRINT_TEST("Last node of a 3-node list is correct", last_node == heap_node_c);
+    PRINT_TEST("Content of last node is correct ('C')", strcmp(last_node->content, "C") == 0);
+
+    // Test 5: Test from the middle of a list
+    last_node = sea_lstlast(head->next); // Start search from node B
+    PRINT_TEST("Last node from the middle is still 'C'", last_node == heap_node_c);
+
+    // Test 6: Check that the 'next' of the last node is NULL
+    PRINT_TEST("'next' pointer of the last node is NULL", last_node->next == NULL);
+
+    // Test 7: Test after adding a new node to the back
+    t_list *heap_node_d = sea_lstnew("D");
+    sea_lstadd_back(&head, heap_node_d);
+    last_node = sea_lstlast(head);
+    PRINT_TEST("Finds the new last node after lstadd_back", last_node == heap_node_d);
+
+    free_test_list(head); // Clean up ALL heap-allocated nodes (A, B, C, and D)
+
+    // --- Arena-Allocated List Test ---
+    t_mem *arena = sea_arena_init(0);
+    head = NULL; // Reset head for the new list
+
+    // Test 8, 9, 10: Use NEW variable names to avoid conflicts
+    t_list *arena_node_a = sea_arena_lstnew(arena, "Arena A");
+    t_list *arena_node_b = sea_arena_lstnew(arena, "Arena B");
+    arena_node_a->next = arena_node_b;
+    head = arena_node_a;
+    last_node = sea_lstlast(head);
+    PRINT_TEST("Works with arena-allocated nodes", last_node == arena_node_b);
+    PRINT_TEST("Content of arena-based last node is correct", strcmp(last_node->content, "Arena B") == 0);
+    PRINT_TEST("Arena list sanity check", sea_lstlast(arena_node_b) == arena_node_b);
+    free(heap_node_a);
+    free(heap_node_b);
+    free(heap_node_c);
+    sea_arena_free(arena); // Clean up arena and all nodes within it
+  }
+puts("\n---LSTDELONE---");
+  {
+      // Test 1: Standard deletion
+    g_del_called_flag = 0;
+    int *content1 = (int*)malloc(sizeof(int));
+    t_list *node1 = sea_lstnew(content1);
+    sea_lstdelone(node1, test_del_func);
+    PRINT_TEST("Deletes a node and calls the del function", g_del_called_flag == 1);
+
+    // Test 2: Deleting a node with NULL content
+    g_del_called_flag = 0;
+    t_list *node2 = sea_lstnew(NULL);
+    sea_lstdelone(node2, test_del_func);
+    PRINT_TEST("Handles a node with NULL content", g_del_called_flag == 1);
+
+    // Test 3: Deleting with a NULL 'del' function (node is freed, content is not)
+    t_list *node3 = sea_lstnew((void*)"unfreed content");
+    sea_lstdelone(node3, NULL);
+    PRINT_TEST("Handles a NULL del function (no crash)", 1);
+
+    // Test 4: Deleting a NULL node
+    g_del_called_flag = 0;
+    sea_lstdelone(NULL, test_del_func);
+    PRINT_TEST("Handles a NULL node input (no crash)", g_del_called_flag == 0);
+
+    // Test 5: Does not affect the next node
+    t_list *node_a = sea_lstnew((void*)"A");
+    t_list *node_b = sea_lstnew((void*)"B");
+    node_a->next = node_b;
+    sea_lstdelone(node_a, noop_del);
+    PRINT_TEST("Does not free the next node", strcmp((char*)node_b->content, "B") == 0);
+    free(node_b); // Manually clean up the remaining node for this specific test
+  }
+  puts("\n---LSTCLEAR---");
+  {
+    // Test 1: Clear a standard list of 3 nodes
+    g_del_counter = 0;
+    t_list *list1 = sea_lstnew(malloc(1));
+    sea_lstadd_back(&list1, sea_lstnew(malloc(1)));
+    sea_lstadd_back(&list1, sea_lstnew(malloc(1)));
+    sea_lstclear(&list1, free); // Use standard free as the deleter
+    PRINT_TEST("Clear a 3-node list (head is NULL)", list1 == NULL);
+
+
+    // Test 2: Clear a single-node list
+    t_list *list2 = sea_lstnew(malloc(1));
+    sea_lstclear(&list2, free);
+    PRINT_TEST("Clear a single-node list (head is NULL)", list2 == NULL);
+
+    // Test 3: Clear an already empty list
+    t_list *list3 = NULL;
+    sea_lstclear(&list3, free);
+    PRINT_TEST("Clear an empty list (head is NULL)", list3 == NULL);
+
+    // Test 4: Clear with a NULL pointer-to-pointer (no crash)
+    sea_lstclear(NULL, free);
+    PRINT_TEST("Clear with a NULL parameter (no crash)", 1);
+
+    // Test 5: Clear with a NULL 'del' function (no crash)
+    // This test WILL leak memory by design, which is the correct behavior.
+    t_list *list5 = sea_lstnew(malloc(1));
+    sea_lstadd_back(&list5, sea_lstnew(malloc(1)));
+    sea_lstclear(&list5, NULL);
+    PRINT_TEST("Clear with a NULL del function (head is NULL)", list5 == NULL);
+  }
   puts("\nDone!");
   return (0);
 }
