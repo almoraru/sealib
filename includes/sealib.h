@@ -18,7 +18,7 @@
 /*      Filename: sealib.h                                                    */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/23 15:35:18 by espadara                              */
-/*      Updated: 2025/09/04 22:16:21 by espadara                              */
+/*      Updated: 2025/09/05 09:29:32 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ t_list	*sea_lstlast(t_list *lst);
 void	sea_lstadd_back(t_list **lst, t_list *new);
 void	sea_lstdelone(t_list *lst, void (*del)(void*));
 void	sea_lstclear(t_list **lst, void (*del)(void*));
-
+void	sea_lstiter(t_list *lst, void (*f)(void*));
 
 
 

@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/04 23:06:01 by espadara                              */
+/*      Updated: 2025/09/05 09:38:13 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,15 +75,28 @@
         }
     }
     // A global flag to check if our test deletion function was called.
-    static int g_del_called_flag = 0;
+static int g_del_called_flag = 0;
 
     // A custom deletion function for testing purposes.
-    void test_del_func(void *data)
+void test_del_func(void *data)
+{
+    if (data)
+        free(data);
+    g_del_called_flag = 1; // Set the flag to prove this function ran.
+}
+void free_list(t_list *lst)
+{
+    t_list *head = lst;
+    t_list *temp;
+    while (head)
     {
-        if (data)
-            free(data);
-        g_del_called_flag = 1; // Set the flag to prove this function ran.
+        temp = head;
+        if (temp->content)
+            free(temp->content);
+        head = head->next;
+        free(temp);
     }
+}
 static void noop_del(void *data)
 {
     (void)data; // This just tells the compiler we know the parameter is unused.
@@ -95,6 +108,26 @@ void test_del_counter(void *data) {
     g_del_counter++;
 }
 
+// A simple function to check if the function was called
+int g_iter_called_count = 0;
+
+void test_count_func(void *content)
+{
+    (void)content; // Unused parameter
+    g_iter_called_count++;
+}
+
+void simple_toupper_func(void *content)
+{
+    char *str = (char *)content;
+    if (str) {
+        while (*str)
+        {
+            *str = toupper((unsigned char)*str);
+            str++;
+        }
+    }
+}
 /* TEST STRUCTS */
 struct TestCase {
     const char *string;
@@ -1573,6 +1606,62 @@ puts("\n---LSTDELONE---");
     sea_lstclear(&list5, NULL);
     PRINT_TEST("Clear with a NULL del function (head is NULL)", list5 == NULL);
   }
+puts("\n---LSTITER---");
+    {
+        // Test 1: Iterate over a multi-node list with a modifying function
+        t_list *lst1 = sea_lstnew(sea_strdup("hello"));
+        lst1->next = sea_lstnew(sea_strdup("world"));
+        sea_lstiter(lst1, &simple_toupper_func);
+        PRINT_TEST("Multi-node list, applies uppercase",
+            strcmp(lst1->content, "HELLO") == 0 && strcmp(lst1->next->content, "WORLD") == 0);
+        free_list(lst1);
+
+        // Test 2: Iterate over an empty list (NULL list pointer)
+        g_iter_called_count = 0;
+        sea_lstiter(NULL, &test_count_func);
+        PRINT_TEST("NULL list pointer input", g_iter_called_count == 0);
+
+        // Test 3: Iterate over a single-node list
+        g_iter_called_count = 0;
+        t_list *lst3 = sea_lstnew(sea_strdup("a"));
+        sea_lstiter(lst3, &test_count_func);
+        PRINT_TEST("Single-node list", g_iter_called_count == 1);
+        free_list(lst3);
+
+        // Test 4: Iterate with a NULL function pointer
+        g_iter_called_count = 0;
+        t_list *lst4 = sea_lstnew(sea_strdup("test"));
+        sea_lstiter(lst4, NULL);
+        PRINT_TEST("NULL function pointer input (no crash)", 1);
+        free_list(lst4);
+
+        // Test 5: Iterate over a list with some empty content
+        t_list *lst5 = sea_lstnew(sea_strdup("case"));
+        lst5->next = sea_lstnew(sea_strdup(""));
+        lst5->next->next = sea_lstnew(sea_strdup("sensitive"));
+        sea_lstiter(lst5, &simple_toupper_func);
+        PRINT_TEST("List with empty string content",
+            strcmp(lst5->content, "CASE") == 0 && strcmp(lst5->next->content, "") == 0 && strcmp(lst5->next->next->content, "SENSITIVE") == 0);
+        free_list(lst5);
+
+        // Test 6: Iteration with a node having NULL content
+        g_iter_called_count = 0;
+        t_list *lst6 = sea_lstnew(sea_strdup("valid"));
+        lst6->next = sea_lstnew(NULL); // Node with NULL content
+        lst6->next->next = sea_lstnew(sea_strdup("valid again"));
+        sea_lstiter(lst6, &test_count_func);
+        PRINT_TEST("List with NULL content in one node", g_iter_called_count == 3);
+        sea_lstclear(&lst6, free);
+
+        // Test 7: A no-op function that only counts calls
+        g_iter_called_count = 0;
+        t_list *lst7 = sea_lstnew(sea_strdup("a"));
+        lst7->next = sea_lstnew(sea_strdup("b"));
+        lst7->next->next = sea_lstnew(sea_strdup("c"));
+        sea_lstiter(lst7, &test_count_func);
+        PRINT_TEST("Correct number of calls for a 3-node list", g_iter_called_count == 3);
+        free_list(lst7);
+    }
   puts("\nDone!");
   return (0);
 }
