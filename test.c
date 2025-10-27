@@ -18,7 +18,7 @@
 /*      Filename: test.c                                                      */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/08/27 22:40:24 by espadara                              */
-/*      Updated: 2025/09/05 09:38:13 by espadara                              */
+/*      Updated: 2025/10/27 08:56:36 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,50 @@
         }
     }
 
+static void *map_strdup_toupper(void *content)
+{
+    char *str = (char *)content;
+    char *new_str;
+    int i = 0;
+
+    if (content == NULL)
+        return (NULL);
+    new_str = sea_strdup(str);
+    if (!new_str)
+        return (NULL);
+    while (new_str[i])
+    {
+        new_str[i] = sea_toupper(new_str[i]);
+        i++;
+    }
+    return (new_str);
+}
+
+/**
+ * @brief Helper to compare two lists.
+ * Returns 1 if identical, 0 otherwise. Assumes content is a string.
+ */
+static int compare_lists(t_list *l1, t_list *l2)
+{
+    while (l1 && l2)
+    {
+        if (l1->content == NULL && l2->content == NULL)
+        {
+            // Both are NULL, continue
+        }
+        else if (l1->content == NULL || l2->content == NULL)
+        {
+            return 0; // One is NULL, the other isn't
+        }
+        else if (strcmp(l1->content, l2->content) != 0)
+        {
+            return 0; // Content differs
+        }
+        l1 = l1->next;
+        l2 = l2->next;
+    }
+    return (l1 == NULL && l2 == NULL); // Both lists must end at the same time
+}
     // Helper function to free the test list
     void free_test_list(t_list *head) {
         t_list *tmp;
@@ -1536,9 +1580,6 @@ puts("\n---STRCMP---");
     PRINT_TEST("Works with arena-allocated nodes", last_node == arena_node_b);
     PRINT_TEST("Content of arena-based last node is correct", strcmp(last_node->content, "Arena B") == 0);
     PRINT_TEST("Arena list sanity check", sea_lstlast(arena_node_b) == arena_node_b);
-    free(heap_node_a);
-    free(heap_node_b);
-    free(heap_node_c);
     sea_arena_free(arena); // Clean up arena and all nodes within it
   }
 puts("\n---LSTDELONE---");
@@ -1661,6 +1702,128 @@ puts("\n---LSTITER---");
         sea_lstiter(lst7, &test_count_func);
         PRINT_TEST("Correct number of calls for a 3-node list", g_iter_called_count == 3);
         free_list(lst7);
+    }
+    puts("\n---LSTMAP---");
+    {
+        // --- Test 1: Basic multi-node mapping ---
+        t_list *orig_lst1 = sea_lstnew(sea_strdup("one"));
+        sea_lstadd_back(&orig_lst1, sea_lstnew(sea_strdup("two")));
+        t_list *new_lst1 = sea_lstmap(orig_lst1, &map_strdup_toupper, free);
+
+        // Build expected list
+        t_list *expected_lst1 = sea_lstnew(sea_strdup("ONE"));
+        sea_lstadd_back(&expected_lst1, sea_lstnew(sea_strdup("TWO")));
+
+        PRINT_TEST("Multi-node list mapping", new_lst1 != NULL && compare_lists(new_lst1, expected_lst1));
+        printf("  Test: %-50s -> %s\n", "Original list is unchanged", (strcmp(orig_lst1->content, "one") == 0) ? "OK" : orig_lst1->content);
+
+        sea_lstclear(&orig_lst1, free);
+        sea_lstclear(&new_lst1, free);
+        sea_lstclear(&expected_lst1, free);
+
+        // --- Test 2: Empty list input ---
+        t_list *new_lst2 = sea_lstmap(NULL, &map_strdup_toupper, free);
+        PRINT_TEST("NULL list input", new_lst2 == NULL);
+
+        // --- Test 3: NULL 'f' function ---
+        t_list *orig_lst3 = sea_lstnew(sea_strdup("test"));
+        t_list *new_lst3 = sea_lstmap(orig_lst3, NULL, free);
+        PRINT_TEST("NULL 'f' function input", new_lst3 == NULL);
+        sea_lstclear(&orig_lst3, free);
+
+        // --- Test 4: NULL 'del' function ---
+        t_list *orig_lst4 = sea_lstnew(sea_strdup("test"));
+        t_list *new_lst4 = sea_lstmap(orig_lst4, &map_strdup_toupper, NULL);
+        PRINT_TEST("NULL 'del' function input", new_lst4 == NULL);
+        sea_lstclear(&orig_lst4, free);
+
+        // --- Test 5: List with NULL content ---
+        t_list *orig_lst5 = sea_lstnew(sea_strdup("a"));
+        sea_lstadd_back(&orig_lst5, sea_lstnew(NULL)); // NULL content
+        sea_lstadd_back(&orig_lst5, sea_lstnew(sea_strdup("c")));
+
+        t_list *new_lst5 = sea_lstmap(orig_lst5, &map_strdup_toupper, free);
+
+        // Build expected list
+        t_list *expected_lst5 = sea_lstnew(sea_strdup("A"));
+        sea_lstadd_back(&expected_lst5, sea_lstnew(NULL));
+        sea_lstadd_back(&expected_lst5, sea_lstnew(sea_strdup("C")));
+
+        PRINT_TEST("List with NULL content", new_lst5 != NULL && compare_lists(new_lst5, expected_lst5));
+
+        sea_lstclear(&orig_lst5, free);
+        sea_lstclear(&new_lst5, free);
+        sea_lstclear(&expected_lst5, free);
+    }
+
+    puts("\n---ARENA_LSTMAP---");
+    {
+        // --- Test 1: Basic mapping in arena ---
+        t_mem *arena1 = sea_arena_init(1024); // 1KB arena
+        t_list *orig_lst1 = sea_lstnew(sea_strdup("one")); // Original list is on heap
+        sea_lstadd_back(&orig_lst1, sea_lstnew(sea_strdup("two")));
+
+        t_list *new_lst1 = sea_arena_lstmap(arena1, orig_lst1, &map_strdup_toupper, free);
+
+        // Build expected list (for comparison, content is on heap)
+        t_list *expected_lst1 = sea_lstnew(sea_strdup("ONE"));
+        sea_lstadd_back(&expected_lst1, sea_lstnew(sea_strdup("TWO")));
+
+        PRINT_TEST("Arena: Multi-node list mapping", new_lst1 != NULL && compare_lists(new_lst1, expected_lst1));
+
+        // Check that new nodes are actually in the arena
+        PRINT_TEST("Arena: New list head is in arena", (unsigned char*)new_lst1 >= arena1->mem && (unsigned char*)new_lst1 < (arena1->mem + arena1->total));
+        PRINT_TEST("Arena: New list next node is in arena", (unsigned char*)new_lst1->next >= arena1->mem && (unsigned char*)new_lst1->next < (arena1->mem + arena1->total));
+
+        // Cleanup: Free original list (heap), expected list (heap),
+        // and arena (which frees new nodes).
+        // The *content* of new_lst1 was heap-allocated by map_strdup_toupper,
+        // so we must free it before freeing the arena.
+        sea_lstiter(new_lst1, free); // Use lstiter to free only content
+        sea_arena_free(arena1);      // Frees the arena and the nodes (new_lst1)
+        sea_lstclear(&orig_lst1, free);
+        sea_lstclear(&expected_lst1, free);
+
+        // --- Test 2: Allocation failure (arena too small) ---
+        size_t node_size = sizeof(t_list);
+        t_mem *small_arena = sea_arena_init(node_size * 2); // Arena for only 2 nodes
+
+        t_list *orig_lst2 = sea_lstnew(sea_strdup("a"));
+        sea_lstadd_back(&orig_lst2, sea_lstnew(sea_strdup("b")));
+        sea_lstadd_back(&orig_lst2, sea_lstnew(sea_strdup("c"))); // 3 nodes
+
+        t_list *new_lst2 = sea_arena_lstmap(small_arena, orig_lst2, &map_strdup_toupper, free);
+
+        // Test that the allocation SUCCEEDED by growing
+        PRINT_TEST("Arena: Allocation succeeds by growing", new_lst2 != NULL);
+        if (small_arena) {
+            // Test that the *first* block is full
+            PRINT_TEST("Arena: Original block is full", small_arena->used == node_size * 2);
+            // Test that a *new* block was created
+            PRINT_TEST("Arena: A new block was created", small_arena->next != NULL);
+        }
+
+        sea_lstclear(&orig_lst2, free);
+        sea_arena_free(small_arena);
+
+        // --- Test 3: NULL 'arena' input ---
+        t_list *orig_lst3 = sea_lstnew(sea_strdup("test"));
+        t_list *new_lst3 = sea_arena_lstmap(NULL, orig_lst3, &map_strdup_toupper, free);
+        PRINT_TEST("Arena: NULL 'arena' input", new_lst3 == NULL);
+        sea_lstclear(&orig_lst3, free);
+
+        // --- Test 4: NULL 'f' or 'del' function ---
+        t_mem *arena4 = sea_arena_init(1024);
+        t_list *orig_lst4 = sea_lstnew(sea_strdup("test"));
+
+        t_list *new_lst4_f = sea_arena_lstmap(arena4, orig_lst4, NULL, free);
+        PRINT_TEST("Arena: NULL 'f' function input", new_lst4_f == NULL);
+
+        t_list *new_lst4_del = sea_arena_lstmap(arena4, orig_lst4, &map_strdup_toupper, NULL);
+        PRINT_TEST("Arena: NULL 'del' function input", new_lst4_del == NULL);
+
+        sea_lstclear(&orig_lst4, free);
+        sea_arena_free(arena4);
     }
   puts("\nDone!");
   return (0);

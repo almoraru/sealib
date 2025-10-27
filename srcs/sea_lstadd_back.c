@@ -18,7 +18,7 @@
 /*      Filename: sea_lstadd_back.c                                           */
 /*      By: espadara <espadara@pirate.capn.gg>                                */
 /*      Created: 2025/09/04 08:36:42 by espadara                              */
-/*      Updated: 2025/09/04 08:40:34 by espadara                              */
+/*      Updated: 2025/10/27 08:52:19 by espadara                              */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,11 @@ void	sea_lstadd_back(t_list **lst, t_list *new)
 
   if (!lst || !new)
     return ;
-  if (*lst)
-    {
+  if (*lst == NULL)
       *lst = new;
-      return ;
+  else
+    {
+      last = sea_lstlast(*lst);
+      last->next = new;
     }
-  last = sea_lstlast(*lst);
-  last->next = new;
 }
