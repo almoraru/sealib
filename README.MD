@@ -1,55 +1,81 @@
-# Sealib 🌊
+                       ______
+                    .-"      "-.
+                   /            \
+       _          |              |          _
+      ( \         |,  .-.  .-.  ,|         / )
+       > "=._     | )(__/  \__)( |     _.=" <
+      (_/"=._"=._ |/     /\     \| _.="_.="\_)
+             "=._ (_     ^^     _)"_.="
+                 "=\__|IIIIII|__/="
+                _.="| \IIIIII/ |"=._
+      _     _.="_.="\          /"=._"=._     _
+     ( \_.="_.="     `--------`     "=._"=._/ )
+      > _.="                            "=._ <
+     (_/                                    \_)
 
-A modern C utility library, charting a course through high-performance memory management with an Arena Allocator and SIMD-accelerated functions.
+# 🌊 SEALIB 🏴‍☠️
 
-Welcome aboard the Sealib project! This library is a personal journey to reimplement and improve upon standard C functions, exploring modern techniques for speed and efficiency. The name is a play on "C Library" and the pirate/sea theme that represents navigating the low-level details of C programming.
+**A modern C utility library, charting a course through the seven seas of code!**
 
-## 🚀 Key Features
+> *"Why sail with the standard library when ye can navigate with yer own?"*
 
-- **Standard C Library Functions**: A robust collection of re-implemented libc functions for strings, memory, character classification, and more
-- **High-Performance Arena Allocator**: A region-based memory manager that dramatically speeds up allocations for objects with a similar lifetime by avoiding malloc overhead
-- **SIMD-Accelerated Functions**: Includes `sea_memcpy_fast` that uses SSE2 instructions to accelerate memory copying
-- **Comprehensive Linked List API**: A full suite of functions for creating and manipulating linked lists, with both standard (heap) and arena-based allocation options
+## 📜 About This Treasure
 
-## 🛠️ Getting Started
+**Sealib** be a mighty C utility library, crafted by the hands of **Swittzy/espadara** aboard the good ship *Code Kraken*. This library be a personal voyage to reimplement and improve upon standard C functions, exploring modern techniques for speed and efficiency. The name be a play on "C Library" and the pirate/sea theme that represents navigating the treacherous low-level waters of C programming!
 
-### Requirements
+## ⚓ Features
 
-- A C compiler like `gcc` or `clang`
-- `make` for building the project
+- ✨ **Standard C Library Functions** - A robust collection of re-implemented libc functions for strings, memory, character classification, and more
+- 🎯 **High-Performance Arena Allocator** - A region-based memory manager that be faster than a privateer's ship, avoiding malloc overhead by allocating objects with similar lifetimes together
+- 🚀 **SIMD-Accelerated Functions** - Includes `sea_memcpy_fast` that uses SSE2 instructions to accelerate memory copying like wind in yer sails!
+- 🌊 **Comprehensive Linked List API** - A full suite of functions for creating and manipulating linked lists, with both standard (heap) and arena-based allocation options
+- ⚔️ **Built for Performance** - Zero-copy operations and efficient data structures fit for battle!
+
+## 🗺️ Installation & Compilation
+
+### Prerequisites
+- `gcc` or `clang` compiler (a proper pirate's tools)
+- `make` (to orchestrate the build)
 - The `libbsd-dev` package (or equivalent) may be needed on some Linux systems for the standard `strlcpy` and `strlcat` functions used in the test file
 
-### Compilation
+### Setting Sail
 
-The included Makefile handles the entire build process.
+1. **Clone the repository:**
+```bash
+git clone git@github.com:almoraru/sealib.git
+cd sealib
+```
 
-**Compile the static library `sealib.a`:**
+2. **Build the library:**
 ```bash
 make
 ```
 
-**Compile and run the tests:**
+This will compile all source files and create `sealib.a` - yer treasure chest of functions!
+
+3. **Build and run the tests:**
 ```bash
 make test
 ./a.out
 ```
+
 This will build the library and compile `test.c` against it, creating an executable named `a.out`.
 
-**Clean up object files:**
+4. **Clean up object files:**
 ```bash
 make clean
 ```
 
-**Full cleanup (removes library and executables):**
+5. **Full cleanup (removes library and executables):**
 ```bash
 make fclean
 ```
 
-## 🏟️ The Arena Allocator
+## 🏴‍☠️ Usage
 
-A key feature of Sealib is its fast, region-based arena allocator. Instead of calling `malloc` for every small object, you can allocate a large "arena" and then rapidly "bump" a pointer to serve allocations from it. This is ideal for tasks where you create many objects that are all freed at the same time.
+### The Arena Allocator - A Pirate's Best Friend!
 
-### Example Usage
+A key feature of Sealib be its fast, region-based arena allocator. Instead of calling `malloc` for every small object like a landlubber, ye can allocate a large "arena" and then rapidly "bump" a pointer to serve allocations from it. This be ideal for tasks where ye create many objects that are all freed at the same time - like plundering a ship and dividing the loot!
 
 ```c
 #include "sealib.h"
@@ -74,21 +100,27 @@ int main(void)
 }
 ```
 
-## 📚 API Reference
+### Compiling Your Project with Sealib
+
+```bash
+gcc -Wall -Wextra -Werror your_file.c -L. -lsealib -I includes -o your_program
+```
+
+## 📚 API Reference - The Captain's Manual
 
 ### Character Classification Functions
 
 Based on `<ctype.h>` functionality:
 
 ```c
-int sea_isalpha(int c);
-int sea_isdigit(int c);
-int sea_isalnum(int c);
-int sea_isascii(int c);
-int sea_isprint(int c);
-int sea_iswhitespace(char c);
-int sea_toupper(int c);
-int sea_tolower(int c);
+int sea_isalpha(int c);      // Be it a letter?
+int sea_isdigit(int c);      // Be it a number?
+int sea_isalnum(int c);      // Be it alphanumeric?
+int sea_isascii(int c);      // Be it ASCII?
+int sea_isprint(int c);      // Can ye print it?
+int sea_iswhitespace(char c);// Be it whitespace?
+int sea_toupper(int c);      // Make it SHOUT!
+int sea_tolower(int c);      // Make it whisper
 ```
 
 ### Memory Functions
@@ -107,23 +139,24 @@ void *sea_bzero(void *s, size_t n);
 ### High-Performance Memory Functions
 
 ```c
-// SIMD-accelerated (SSE2) memory copy. Does not handle overlap.
+// SIMD-accelerated (SSE2) memory copy. Faster than a cannonball!
+// Warning: Does not handle overlap - plan yer course carefully!
 void *sea_memcpy_fast(void *dest, const void *src, size_t n);
 ```
 
 ### Arena Allocator Functions
 
 ```c
-// The arena management struct.
+// The arena management struct - yer treasure hold!
 typedef struct s_mem t_mem;
 
 // Initializes an arena. Use size 0 for the default.
 t_mem *sea_arena_init(size_t size);
 
-// Allocates zeroed memory from an arena.
+// Allocates zeroed memory from an arena - fast as lightning!
 void *sea_arena_alloc(t_mem *arena, size_t size);
 
-// Frees the entire arena and all memory allocated within it.
+// Frees the entire arena and all memory allocated within it - one command to rule them all!
 void sea_arena_free(t_mem *arena);
 ```
 
@@ -143,7 +176,7 @@ size_t sea_strlcpy(char *dst, const char *src, size_t size);
 size_t sea_strlcat(char *dst, const char *src, size_t size);
 ```
 
-**Heap-based allocation:**
+**Heap-based allocation (the traditional way):**
 ```c
 char   *sea_strdup(const char *s);
 char   *sea_strsub(char const *s, unsigned int start, size_t len);
@@ -155,7 +188,7 @@ char   *sea_strmapi(char const *s, char (*f)(unsigned int, char));
 void   sea_striteri(char *s, void (*f)(unsigned int, char *));
 ```
 
-**Arena-based allocation:**
+**Arena-based allocation (the pirate's way!):**
 ```c
 char   *sea_arena_strdup(t_mem *arena, const char *src);
 char   *sea_arena_strsub(t_mem *arena, char const *s, unsigned int start, size_t len);
@@ -168,24 +201,24 @@ char   **sea_arena_split(t_mem *arena, char const *s, char c);
 Based on `<stdlib.h>` functionality:
 
 ```c
-int    sea_atoi(const char *nptr);
-int    sea_atoi_base(const char *str, int base);
-double sea_atof(const char *str);
+int    sea_atoi(const char *nptr);           // String to integer
+int    sea_atoi_base(const char *str, int base); // String to integer with custom base
+double sea_atof(const char *str);            // String to floating point
 ```
 
 ### File Descriptor Output Functions
 
 ```c
-void sea_putchar_fd(char c, int fd);
-void sea_putstr_fd(char const *s, int fd);
-void sea_putendl_fd(char *s, int fd);
-void sea_putnbr_fd(int n, int fd);
+void sea_putchar_fd(char c, int fd);      // Write a character
+void sea_putstr_fd(char const *s, int fd);// Write a string
+void sea_putendl_fd(char *s, int fd);     // Write a string with newline
+void sea_putnbr_fd(int n, int fd);        // Write a number
 ```
 
 ### Linked List Functions
 
 ```c
-// The linked list node struct.
+// The linked list node struct - for chaining yer data!
 typedef struct s_list t_list;
 ```
 
@@ -194,35 +227,74 @@ typedef struct s_list t_list;
 t_list *sea_lstnew(void *content);
 ```
 
-**Arena-based allocation:**
+**Arena-based allocation (faster than a mermaid's swim!):**
 ```c
 t_list *sea_arena_lstnew(t_mem *arena, void *content);
 ```
 
 **List manipulation:**
 ```c
-void   sea_lstadd_front(t_list **lst, t_list *new);
-void   sea_lstadd_back(t_list **lst, t_list *new);
-int    sea_lstsize(t_list *lst);
-t_list *sea_lstlast(t_list *lst);
-void   sea_lstdelone(t_list *lst, void (*del)(void*));
-void   sea_lstclear(t_list **lst, void (*del)(void*));
+void   sea_lstadd_front(t_list **lst, t_list *new); // Add to the bow
+void   sea_lstadd_back(t_list **lst, t_list *new);  // Add to the stern
+int    sea_lstsize(t_list *lst);                     // Count yer treasure
+t_list *sea_lstlast(t_list *lst);                    // Find the last node
+void   sea_lstdelone(t_list *lst, void (*del)(void*));     // Walk the plank!
+void   sea_lstclear(t_list **lst, void (*del)(void*));     // Clear the deck!
 ```
+
+## 🗂️ Project Structure
+
+```
+sealib/
+├── includes/
+│   └── sealib.h             # Main header file
+├── srcs/
+│   ├── [character functions]
+│   ├── [memory functions]
+│   ├── [string functions]
+│   ├── [arena allocator]
+│   ├── [linked list functions]
+│   └── [conversion functions]
+├── test.c                   # Test suite
+├── Makefile                 # Build configuration
+└── README.md                # Ye be here!
+```
+
+## 🧭 Makefile Commands
+
+| Command | Description |
+|---------|-------------|
+| `make` or `make all` | Build the `sealib.a` library |
+| `make test` | Build library and create test executable |
+| `make clean` | Remove object files |
+| `make fclean` | Remove all generated files |
+| `make re` | Rebuild everything from scratch |
+
+## ⚔️ Technical Details
+
+- **Memory Management**: Uses arena allocation for efficient memory handling - no leaks on this ship!
+- **Compilation Flags**: `-Wall -Wextra -Werror -g`
+- **Output**: Static library `sealib.a`
+- **Performance**: SIMD-accelerated functions and zero-copy operations
 
 ## 🎯 Performance Benefits
 
-- **Arena Allocation**: Dramatically reduces allocation overhead for short-lived objects
+- **Arena Allocation**: Dramatically reduces allocation overhead for short-lived objects - like storing doubloons in a single chest instead of scattered across the ship!
 - **SIMD Acceleration**: SSE2-optimized memory operations for improved throughput
 - **Zero-Copy Operations**: Many functions designed to minimize unnecessary memory copying
 - **Efficient Data Structures**: Optimized linked list implementations with both heap and arena variants
 
+## 👥 Crew
+
+- **Swittzy/espadara/almoraru** - *Captain of the Code Kraken*
+
 ## 🤝 Contributing
 
-This is a personal learning project exploring modern C programming techniques. Feel free to explore the code, suggest improvements, or use it as inspiration for your own projects.
+This be a personal learning project exploring modern C programming techniques. Feel free to explore the code, suggest improvements, or use it as inspiration for yer own voyages!
 
-## 📜 License
+## 📝 License
 
-This project is licensed under the MIT License - see below for details:
+This project sails under the MIT License - use it wisely, share it freely!
 
 ```
 MIT License
@@ -246,6 +318,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
+## 🌊 Fair Winds and Following Seas!
+
+May yer allocations be swift and yer memory be leak-free! ☕🏴‍☠️
+
+```
+     ~    ~   ~  ~     ~    ~ ~  ~      ~     ~  ~
+  ~    ~  ~    Navigate the seas of C!   ~    ~   ~
+~    ~      ~     ~    ~    ~    ~   ~      ~    ~
+```
+
 ---
 
-*Navigate the seas of C programming with Sealib! ⚓*
+*"In code we trust, in pirates we sail!"* ⚓
